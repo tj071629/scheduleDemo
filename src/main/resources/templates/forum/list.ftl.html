@@ -1,0 +1,262 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" class="forumpagerForm" data-toggle="ajaxsearch" action="${ctx}forum/list.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+            <label>批量操作:</label>
+            <select data-toggle="selectpicker" id="batselector">
+                <option value="1">置顶</option>
+                <option value="-1">取消置顶</option>
+                <option value="2">推送</option>
+                <option value="-3">锁定</option>
+                <option value="3">恢复</option>
+                <option value="4">移动</option>
+            </select>
+            <button type="button" onclick="batprocess()" class="btn-default" >确定</button>
+            <a href="${ctx}forum/blksel.html?topic=-1" class="btn btn-default showblksel hidden" data-toggle="dialog" data-width="400" data-height="100"   data-mask="true">移动</a>
+                
+            &nbsp;
+            <label>板块:</label>
+            <select data-toggle="selectpicker" name="blkid">
+            	<option value="-1">全部</option>
+            	<#list blklist as blk>
+               		<option value="${blk.id}">${blk.name}</option>
+                </#list>
+            </select>&nbsp;
+            
+            <label>置顶:</label>
+            <select data-toggle="selectpicker" name="top">
+            	<option value="false">全部</option>
+            	<option value="true">已置顶</option>
+            </select>&nbsp;
+            
+            <label>锁定:</label>
+            <select data-toggle="selectpicker" name="deleted">
+            	<option value="false">全部</option>
+            	<option value="true">已锁定</option>
+            </select>&nbsp;
+            
+            <label>举报:</label>
+            <select data-toggle="selectpicker" name="report">
+            	<option value="false">全部</option>
+            	<option value="true">已举报</option>
+            </select>&nbsp;
+            <input type="text" name="date" id="selectdate"  data-toggle="datepicker" size="15" placeholder="请输入发布日期">
+            
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+            	<th align="center"><input type="checkbox" name="checkbox" id="batcheckbox" data-toggle="icheck"></th>
+                <th>序号</th>
+                <th>标题</th>
+                <th>作者</th>
+                <th>板块</th>
+                <th>发布日期</th>
+                <th>浏览量</th>
+                <th>评论数</th>
+                <th>点赞数</th>
+                <th>分享数</th>
+                <th>锁定</th>
+                <th>举报</th>
+                <th>置顶</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as topic>
+            <tr>
+            	<td align="center">
+            	<input type="checkbox" name="checkbox" class="topiccheckbox" data-toggle="icheck" data-id="${topic.id}">
+            	</td>
+                <td>${topic_index+1+((result.pageinfo.currpage-1)*result.pageinfo.rowinpage)}</td>
+                <td>${topic.title}</td>
+                <td>${topic.nickname}</td>
+                <td>${topic.blkname}</td>
+                <td>${topic.pubtime}</td>
+                <td>${topic.vnum}</td>
+                <td>${topic.commentnum!}</td>
+                <td>${topic.voteup!}</td>
+                <td>${topic.sharenum!}</td>
+                <td>${topic.deleted}</td>
+                <td>${topic.reason!}</td>
+                <td>${topic.settop!}</td>
+                <td>
+                <#if topic.deleted==1>
+                <button type="button" onclick="recover(${topic.id},true)" class="btn-default" >恢复</button>
+                </#if>
+                <#if topic.deleted==0>
+                <button type="button" onclick="del(${topic.id},true)" class="btn-default" >锁定</button>
+                </#if>
+                <#if topic.settop==1>
+                <button type="button" onclick="untop(${topic.id},true)" class="btn-default" >取消置顶</button>
+                </#if>
+                <#if topic.settop==0>
+                <button type="button" onclick="settop(${topic.id},true)" class="btn-default" >设置置顶</button>
+                </#if>
+                <button type="button" onclick="push(${topic.id},true)" class="btn-default" >推送</button>
+                <a href="${ctx}forum/blksel.html?topic=${topic.id}" class="btn btn-default" data-toggle="dialog" data-width="400" data-height="100" data-id="dialog-mask-${topic.id}" data-mask="true">移动</a>
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+<script>
+setTimeout(function(){
+	$('#batcheckbox').on('ifChecked', function(event){
+		$('.topiccheckbox').iCheck('check');
+	});
+	$('#batcheckbox').on('ifUnchecked', function(event){
+		$('.topiccheckbox').iCheck('uncheck');
+	});
+},100);
+function dorefreshforum(){
+	$(".forumpagerForm").submit();
+}
+function recover(topicid,showmsg){
+	var url='${ctx}forum/recover';
+	var params={topicid:topicid};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success&&showmsg){
+			altmsg("保存成功","保存成功",function(){
+				dorefreshforum();
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+function push(topicid,showmsg){
+	var url='${ctx}forum/push';
+	var params={topicid:topicid};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success&&showmsg){
+			altmsg("保存成功","保存成功",function(){
+				dorefreshforum();
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+
+function del(topicid,showmsg){
+	var url='${ctx}forum/del';
+	var params={topicid:topicid};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success&&showmsg){
+			altmsg("保存成功","保存成功",function(){
+				dorefreshforum();
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+
+
+function settop(topicid,showmsg){
+	var url='${ctx}forum/top';
+	var params={topicid:topicid};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success&&showmsg){
+			altmsg("保存成功","保存成功",function(){
+				dorefreshforum();
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+
+function untop(topicid,showmsg){
+	var url='${ctx}forum/untop';
+	var params={topicid:topicid};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success&&showmsg){
+			altmsg("保存成功","保存成功",function(){
+				dorefreshforum();
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+
+function batprocess(){
+	var option=$("#batselector").selectpicker('val');
+	var delayrefresh=false;
+	$(".topiccheckbox").each(function(){
+		if($(this).is(":checked")){
+			var topicid=$(this).attr("data-id");
+			if(option==1){
+				settop(topicid,false);
+				delayrefresh=true;
+			}
+			if(option==-1){
+				untop(topicid,false);
+				delayrefresh=true;
+			}
+			if(option==2){
+				push(topicid,false);
+				delayrefresh=true;
+			}
+			if(option==3){
+				recover(topicid,false);
+				delayrefresh=true;
+			}
+			if(option==-3){
+				del(topicid,false);
+				delayrefresh=true;
+			}
+			if(option==4){
+				$(".showblksel").click();
+			}
+		}
+	});
+	if(delayrefresh){
+		setTimeout(function(){
+			altmsg("保存成功","保存成功",function(){
+				dorefreshforum();
+			});
+		},1000);
+	}
+}
+
+function batmove(blkid){
+	$(".topiccheckbox").each(function(){
+		if($(this).is(":checked")){
+			var topicid=$(this).attr("data-id");
+			var url='${ctx}forum/move';
+			var params={topicid:topicid,blkid:blkid};
+			var callback=function(rtndata){
+			}
+			querydata(url,params,callback);
+		}
+	});
+	setTimeout(function(){
+		altmsg("保存成功","保存成功",function(){
+			dorefreshforum();
+		});
+	},1000);
+}
+</script>

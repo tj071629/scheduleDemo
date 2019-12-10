@@ -1,0 +1,128 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}indic/list.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+            <label>公开属性:</label>
+            <select data-toggle="selectpicker"  data-width="100" class="privated" name="privated">
+                <option value="-1">全部</option>
+                <option value="0">公开</option>
+                <option value="1">私有</option>
+            </select>&nbsp;
+            <label>专属:</label>
+            <select data-toggle="selectpicker" data-width="100"  class="devfeetype"  name="devfeetype">
+                <option value="-1">全部</option>
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </select>&nbsp;
+            
+            <label>收费:</label>
+            <select data-toggle="selectpicker" data-width="100"  class="feetype"  name="feetype">
+                <option value="-1">全部</option>
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </select>&nbsp;
+            <label>一审状态:</label>
+            <select data-toggle="selectpicker" data-width="100"  class="approvalone" name="approvalone">
+                <option value="-10">全部</option>
+                <option value="-1">拒绝</option>
+                <option value="10">通过</option>
+                <option value="0">未审核</option>
+            </select>&nbsp;
+            <label>二审状态:</label>
+            <select data-toggle="selectpicker" data-width="100"  class="approvaltwo" name="approvaltwo">
+                <option value="-10">全部</option>
+                <option value="-2">拒绝</option>
+                <option value="20">通过</option>
+            </select>&nbsp;
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th>指标编号</th>
+                <th>发起日期</th>
+                <th>指标名称</th>
+                <th>发起人</th>
+                <th>是否专属</th>
+                <th>是否私有</th>
+                <th>是否付费使用</th>
+                <th>开发费用</th>
+                <th>使用费用</th>
+                <th>审核状态</th>
+                <th>审核人</th>
+                <th>最后审核日期</th>
+                <th>节点截止日期</th>
+                <th>查看</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as indicinfo>
+        	<tr>
+                <td>${indicinfo["id"]}</td>
+                <td>${indicinfo["pubtime"]!}</td>
+                <td>${indicinfo["title"]}</td>
+                <td>${indicinfo["nickname"]!}</td>
+                <td>
+                	<#if indicinfo["devfeetype"] gt 0 >  
+					    是 
+					<#else>  
+					    否 
+					</#if>  
+                </td>
+                <td>
+	                <#if indicinfo["privated"] gt 0>  
+					     是
+					<#else>  
+					     否  
+					</#if> 
+                </td>
+                <td>
+	                <#if indicinfo["feetype"] gt 0>  
+					     是
+					<#else>  
+					     否  
+					</#if>  
+                </td>
+                <td>${indicinfo["devfee"]!}</td>
+                <td>${indicinfo["fee"]!}</td>
+                <td>${indicinfo["approvalstatus"]!}</td>
+                <td>${indicinfo["adminname"]!}</td>
+                <td>${(indicinfo["approvaltime"]?string("yyyy-MM-dd"))!}</td>
+                <td>${(indicinfo["enddate"]?string("yyyy-MM-dd"))!}</td>
+                <td><button type="button" class="btn-green" onclick='openindexdetail(this,${indicinfo["id"]})'>查看</button></td>
+                <td><button type="button" class="btn-blue" onclick='editindexdetail(this,${indicinfo["id"]})'>审核</button></td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+setTimeout(function(){
+	$(".privated").selectpicker('val', '${privated!}');
+	$(".feetype").selectpicker('val', '${feetype!}');
+	$(".devfeetype").selectpicker('val', '${devfeetype!}');
+	$(".approvalone").selectpicker('val', '${approvalone!}');
+	$(".approvaltwo").selectpicker('val', '${approvaltwo!}');
+},200);
+function openindexdetail(obj,indicid){
+	$(obj).navtab({id:'indicdetail', url:'${ctx}indic/detail.html?indicid='+indicid, title:'指标详情'});
+}
+
+function editindexdetail(obj,indicid){
+	$(obj).navtab({id:'indiceditdetail', url:'${ctx}indic/edit.html?indicid='+indicid, title:'指标审核'});
+}
+</script>

@@ -1,0 +1,60 @@
+<div class="bjui-pageContent">
+	<form action="###" id="j_custom_form" data-toggle="validate"
+		data-alertmsg="false">
+		<p><label  class="control-label x85">指标基本信息</label></p>
+		<p><label  class="control-label x85">指标编号：</label>
+			<label  class=" x85">${indicInfo["id"]}</label>
+			<label  class="control-label x85">发起时间：</label>
+			<label  class=" x185">${indicInfo["pubtime"]}</label>
+		</p>
+		<p><label  class="control-label x85">发起人：</label>
+			<label  class=" x85">${indicInfo["nickname"]!}</label>
+			<label  class="control-label x85">指标属性：</label>
+			<label  class=" x185">${indicInfo["indicdesc"]}</label>
+		</p>
+		<p><label  class="control-label x85">指标名称：</label>
+			<label  class=" x85">
+				<a href="/web/forum/invitation.html?topicid=${indicInfo["id"]}">
+					${indicInfo["title"]!}
+				</a>
+			</label>
+		</p>
+		<p><label  class="control-label x85">指标描述：</label>
+		<div class="content">
+			${indicInfo["content"]!}
+		</div>
+		</p>
+		<p><label  class="control-label x85">审核信息</label>
+		</p>
+		<p>
+		<label  class="control-label x85">审核状态：</label>
+		<label  class=" x85">${indicInfo["approvalstatus"]!}</label>
+		<label  class="control-label x85">审核人：</label>
+		<label  class=" x85">${indicInfo["adminname"]!}</label>
+		</p>
+		
+		<p>
+		<label  class="control-label x85">审核日期：</label>
+		<!-- <label  class=" x85">${(indicinfo["approvaltime"]?string("yyyy-MM-dd"))!}</label> -->
+		<label  class=" x185">${indicInfo["approvaltimetest"]}</label>
+		</p>
+		<p>
+		<label  class="control-label x85">备注信息：</label>
+		<span>${indicInfo["desctext"]!}</span>
+		</p>
+		<#if indicInfo.result lt 0>
+		<p>
+		<label  class="control-label x85">拒绝信息：</label>
+		<span>${indicInfo["denytext"]!}</span>
+		</p>
+		</#if>
+	</form>
+</div>
+<style>
+.content{
+	margin-left:20px;
+	border:1px solid #eee;
+	padding:5px;
+	min-height:200px;
+}
+</style>

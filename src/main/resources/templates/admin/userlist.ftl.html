@@ -1,0 +1,71 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}admin/userlist.html" method="post">
+        <div class="bjui-searchBar">
+        	<button type="button" style="float:left;margin-right:15px;" class="btn-green" data-icon="plus" onclick='edituser(this,-1)'>添 加</button>&nbsp;	
+	        <label>登录名:</label>
+            <input type="text" style="width:150px;" name="username" value="${username!}"/>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center" width="8%">登录名</th>
+                <th align="center" width="5%">性别</th>
+                <th>角色</th>
+                <th align="center" width="10%">手机号</th>
+                <th align="center" width="15%">邮箱</th>
+                <th align="center" width="8%">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list adminlist as admin>
+            <tr class="admin_${admin.id}">
+                <td align="center">${admin.username}</td>
+                <td align="center">
+                <#if admin.sex == 1>
+                	男
+                </#if>
+                <#if admin.sex == 2>
+                	女
+                </#if>
+                </td>
+                <td>${admin.roles!}</td>
+                <td align="center">${admin.phone!}</td>
+                <td align="center">${admin.email!}</td>
+                <td align="center">
+	                <button type="button" class="btn-green" onclick='edituser(this,${admin.id})'>编辑</button>
+	                <button type="button" class="btn-red" onclick='deluser(${admin.id})'>删除</button>
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+
+<script>
+function edituser(obj,userid){
+	$(obj).dialog({id:'edituser', width:935, height:325, maxable: false, minable: false, url:'${ctx}admin/edituser.html?userid='+userid, title:'用户编辑'});
+}
+function deluser(userid){
+	
+	$("body").alertmsg('confirm', '确认删除当前用户？', {
+		okCall : function() {
+			
+			var url='${ctx}admin/deladmin';
+			var params={id:userid};
+			var callback=function(rtndata){
+				var success=rtndata.success;
+				
+			}
+			querydata(url,params,callback);
+			$(".admin_"+userid).remove();
+			
+		}
+	})
+	
+	
+}
+</script>

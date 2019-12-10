@@ -1,0 +1,481 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}schedule/selscheduleuser.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <input type="hidden" name="jobname" value="${jobname!}">
+        <div class="bjui-searchBar">
+            <label>账户类型:</label>
+            <select name="accounttype" data-toggle="selectpicker">
+                <option value="0">全部</option>
+                <option value="1">机构</option>
+                <option value="-1">个人</option>
+            </select>&nbsp;
+            <input type="text" name="loginid" value="${loginid!}" id="loginid"  size="15" placeholder="用户名" >
+            <input type="text" name="phone" value="${phone!}" id="phone" size="15" placeholder="手机号" >
+            <label>注册日期:</label><input type="text" name="startdate" value="${startdate!}" id="selectstartdate"  data-toggle="datepicker"  size="15" placeholder="起始">
+            <input type="text" name="enddate" id="selectenddate" value="${enddate!}"  data-toggle="datepicker" size="15"  placeholder="截止">
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+            <input type="checkbox" name="senduser" value="organization" data-toggle="icheck" id="senduser_org" />&nbsp;<label>所有机构</label>
+            <input type="checkbox" name="senduser" value="personal" data-toggle="icheck" id="senduser_per" />&nbsp;<label>所有个人</label>
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent" id="scheduleinit_div">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center"><input type="checkbox" name="checkbox" id="batchcheckbox_schedule" data-toggle="icheck"></th>
+                <th align="center">用户编号</th>
+                <th align="center">账户类型</th>
+                <th align="center">用户名</th>
+                <th align="center">手机号</th>
+                <th align="center">IP所在地</th>
+                <th align="center">绑定邮箱</th>
+                <th align="center">注册日期</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as uinfo>
+            <tr align="center">
+                <td><input type="checkbox" class="susercb" data-toggle="icheck" data-id="${(uinfo.id?c)!}" data-name="${(uinfo.loginid)!}" data-phone="${(uinfo.phone)!}" data-email="${(uinfo.email)!}" value='${(uinfo.id?c)!}' name="checkbox" /></td>
+                <td>${uinfo["id"]!?c}</td>
+                
+                <#if (uinfo.orgid)?? && (uinfo.orgid)! &gt; 0>
+                	<td>机构</td>
+                <#elseif (uinfo.orgid)?? &&(uinfo.orgid)! &lt; 0>
+				  	<td>个人</td>
+				<#else>
+					<td>-</td>
+				</#if>
+                
+                <td>${uinfo["loginid"]!}</td>
+                <td>${uinfo["phone"]!}</td>
+                <td>${uinfo["province"]!""}
+                <#if (uinfo.province)?? && (uinfo.province) !="">,</#if>
+                ${uinfo["city"]!""}</td>
+                <td>${uinfo["email"]!}</td>
+                <td>${(uinfo["regist_time"]?string("yyyy-MM-dd"))!}</td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+setScheduleChecked();
+
+var c = false;
+var d = false;
+
+//翻页后设置是否选中
+function setScheduleChecked(){
+
+	/* alert("${jobname!}"); */
+	/* alert(getCookieFunc("senduser_org"+"${jobname!}")); */
+	
+	if(getCookieFunc("senduser_org"+"${jobname!}") == "checked"){
+		$('#senduser_org').iCheck('check');
+		
+		c = true;
+		
+		if(c || d){
+			$('.susercb').iCheck('disable'); 
+		}
+		
+	}else{
+		$('#senduser_org').iCheck('uncheck');
+		
+		c = false;
+		
+		if(c && d){
+			$('.susercb').iCheck('enable'); 
+		}
+	}
+	
+	/* alert(getCookieFunc("senduser_per"+"${jobname!}")); */
+	
+	if(getCookieFunc("senduser_per"+"${jobname!}") == "checked"){
+		$('#senduser_per').iCheck('check');
+		$('.susercb').iCheck('disable'); 
+		
+		d = true;
+		
+		if(c || d){
+			$('.susercb').iCheck('disable'); 
+		}
+		
+	}else{
+		$('#senduser_per').iCheck('uncheck');
+		
+		d = false;
+		
+		if(c && d){
+			$('.susercb').iCheck('enable'); 
+		}
+	}
+	
+	var jobname = $("#jobname_es").val();
+	
+	if(jobname != ""){
+		
+		 //第一步：判断Cookie中是否存在
+		 if(getCookieFunc("uinfoids"+"${jobname!}") != null && getCookieFunc("uinfoids"+"${jobname!}") != ""){
+			 
+		 	 var boxes = $("div#scheduleinit_div input[type=checkbox]");
+			 for(var i=0;i<boxes.length;i++){
+			     var value = boxes[i].value;
+			     var checkedIds = getCookieFunc("uinfoids"+"${jobname!}")?getCookieFunc("uinfoids"+"${jobname!}").toString():"";
+				
+			     if(checkedIds.indexOf(value,0) != -1){
+			    	 $(boxes[i]).attr("checked", true);
+			     }else{
+			    	 $(boxes[i]).attr("checked", false);
+			     }
+			 }
+			 
+		 }else{
+			 
+			 //当前选择的任务组别和初始值相同，则初始化勾选项
+			 if(getorijobgroup() == getjobgroup()){
+				 
+				//第二步：如果第一步中Cookie中没有已选的接收人，则根据jobname去数据库中查询
+				 var url='${ctx}schedule/getReceiverIdByJobName';
+				 var params={jobname:jobname};
+				
+				 var callback=function(rtndata){
+					
+					 var success=rtndata.success;
+					 
+					 if(rtndata && rtndata.receiverIds != ""){
+						 
+						 var receiverIds = rtndata.receiverIds;
+						 
+						 var checkboxs = $("div#scheduleinit_div input[type=checkbox]");
+						 for(var i=0;i<checkboxs.length;i++){
+						     var value = checkboxs[i].value;
+						     if(receiverIds !=null && receiverIds.indexOf(value,0) != -1){
+						  	   	$(checkboxs[i]).iCheck("check");
+						     }else{
+						  	   	$(checkboxs[i]).iCheck("uncheck");
+						     }
+						     
+						 }
+						 
+						 /* alert("--->"+receiverIds); */
+						 
+						 putCookieFunc("uinfoids"+"${jobname!}",receiverIds);
+						 
+					 }
+				 }
+				 
+				 querydata(url,params,callback);
+				 
+			 }
+			 
+		 }
+	 }
+	
+}
+
+var mapUser = new Map();
+	
+var a = true;
+var b = true;
+
+setTimeout(function(){
+	
+	$('#batchcheckbox_schedule').on('ifChecked', function(event){
+		$('.susercb').iCheck('check');
+	});
+	
+	$('#batchcheckbox_schedule').on('ifUnchecked', function(event){
+		$('.susercb').iCheck('uncheck');
+	});
+	
+	
+	$('#senduser_org').on('ifChecked', function(event){
+		$('.susercb').iCheck('disable'); 
+		a = false;
+		putCookieFunc("senduser_org"+"${jobname!}","checked");
+	});
+	
+	$('#senduser_per').on('ifChecked', function(event){
+		$('.susercb').iCheck('disable'); 
+		b = false;
+		putCookieFunc("senduser_per"+"${jobname!}","checked");
+	});
+	
+	$('#senduser_org').on('ifUnchecked', function(event){
+		a = true;
+		if(a && b){
+			$('.susercb').iCheck('enable'); 
+		}
+		putCookieFunc("senduser_org"+"${jobname!}","unchecked");
+	});
+	
+	$('#senduser_per').on('ifUnchecked', function(event){
+		b = true;
+		if(a && b){
+			$('.susercb').iCheck('enable'); 
+		}
+		putCookieFunc("senduser_per"+"${jobname!}","unchecked");
+	});
+	
+	$('.susercb').on('ifChecked', function(event){
+		
+		 var jobgroup=0;
+		 if($("#j_jobgroup0").is(":checked")){
+			 jobgroup=0;
+		 }else if($("#j_jobgroup1").is(":checked")){
+			 jobgroup=1;
+		 }else if($("#j_jobgroup2").is(":checked")){
+			 jobgroup=2;
+		 }else{
+			 jobgroup=3;
+		 }
+		 
+		/* alert($("#jobgroup_es").val()); */
+		
+		var email= $(this).attr("data-email");
+		var phone= $(this).attr("data-phone");
+		
+		var uinfoid= $(this).attr("data-id");
+		
+		if(jobgroup == 0 || jobgroup == 1){
+			//alert("发消息和站内信");
+			
+			putCookieFunc("uinfoids"+"${jobname!}",(getCookieFunc("uinfoids"+"${jobname!}")==null||getCookieFunc("uinfoids"+"${jobname!}")=="")?uinfoid:(getCookieFunc("uinfoids"+"${jobname!}")+","+uinfoid));
+		}else if(jobgroup == 2 && email != ""){
+			//alert("发邮件，邮箱不为空");
+			
+			putCookieFunc("uinfoids"+"${jobname!}",(getCookieFunc("uinfoids"+"${jobname!}")==null||getCookieFunc("uinfoids"+"${jobname!}")=="")?(uinfoid+"#"+email):(getCookieFunc("uinfoids"+"${jobname!}")+","+(uinfoid+"#"+email)));
+		}else if(jobgroup == 3 && phone != ""){
+			//alert("发短信，短信号不为空");
+			putCookieFunc("uinfoids"+"${jobname!}",(getCookieFunc("uinfoids"+"${jobname!}")==null||getCookieFunc("uinfoids"+"${jobname!}")=="")?(uinfoid+"#"+phone):(getCookieFunc("uinfoids"+"${jobname!}")+","+(uinfoid+"#"+phone)));
+		}
+		
+	}); 
+	
+	
+	$('.susercb').on('ifUnchecked', function(event){
+		
+		var jobgroup=0;
+		if($("#j_jobgroup0").is(":checked")){
+			 jobgroup=0;
+		}else if($("#j_jobgroup1").is(":checked")){
+			 jobgroup=1;
+		}else if($("#j_jobgroup2").is(":checked")){
+			 jobgroup=2;
+		}else{
+			 jobgroup=3;
+		}
+		 
+		var uinfoid= $(this).attr("data-id");
+		if(jobgroup == 2 && email != ""){
+			//alert("发邮件，邮箱不为空");
+			var email= $(this).attr("data-email");
+			uinfoid += "#" + email;
+		}else if(jobgroup == 3 && phone != ""){
+			//alert("发短信，短信号不为空");
+			var phone= $(this).attr("data-phone");
+			uinfoid += "#" + phone;
+		}
+		
+		var cookievalue = getCookieFunc("uinfoids"+"${jobname!}")?getCookieFunc("uinfoids"+"${jobname!}").toString().split(","):"";
+		
+		//alert("--->"+cookievalue);
+		
+		var set = new Set();
+		for(i = 0; i < cookievalue.length; i++) {
+			
+			/* alert(cookievalue[i]);
+			alert(uinfoid);  */
+			
+			if(cookievalue[i] != uinfoid){
+				set.add(cookievalue[i]);
+			}
+		}
+		//alert(set.show());
+		
+		putCookieFunc("uinfoids"+"${jobname!}", set.size() == 0 ? "" : set.show());
+		
+	}); 
+	
+},100);
+
+function putCookieFunc(cookieKey,cookieValue){  
+    $.cookie(cookieKey,cookieValue);  
+};
+
+function getCookieFunc(cookieKey){  
+	return $.cookie(cookieKey);  
+};
+
+/*js集合set类的实现*/
+function Set() {
+    this.dataStore = [];
+    this.add = add;//新增元素
+    this.remove = remove;//删除元素
+    this.size = size;//集合的元素个数
+    this.union = union;//求并集
+    this.contains = contains;//判断一个集合中是否包含某个元素
+    this.intersect = intersect;//交集
+    this.subset = subset;//判断一个集合是否是另一个的子集
+    this.difference = difference;//求补集
+    this.show = show;//将集合元素显示出来
+}
+
+function add(data) {
+    if (this.dataStore.indexOf(data) < 0) {
+        this.dataStore.push(data);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+function remove(data) {
+    var pos = this.dataStore.indexOf(data);
+    if (pos > -1) {
+        this.dataStore.splice(pos,1);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+function size() {
+    return this.dataStore.length;
+}
+
+function show() {
+	//return "[" + this.dataStore + "]";
+	return this.dataStore;
+}
+
+function contains(data) {
+    if (this.dataStore.indexOf(data) > -1) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+function union(set) {
+    var tempSet = new Set();
+    for (var i = 0; i < this.dataStore.length; ++i) {
+        tempSet.add(this.dataStore[i]);
+    }
+    for (var i = 0; i < set.dataStore.length; ++i) {
+        if (!tempSet.contains(set.dataStore[i])) {
+            tempSet.dataStore.push(set.dataStore[i]);
+        }
+    }
+    return tempSet;
+}
+
+function intersect(set) {
+    var tempSet = new Set();
+    for (var i = 0; i < this.dataStore.length; ++i) {
+        if (set.contains(this.dataStore[i])) {
+            tempSet.add(this.dataStore[i]);
+        }
+    }
+    return tempSet;
+}
+
+function subset(set) {
+    if (this.size() > set.size()) {
+        return false;
+    }
+    else {
+        for(var member in this.dataStore) {
+            if (!set.contains(member)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function difference(set) {
+    var tempSet = new Set();
+    for (var i = 0; i < this.dataStore.length; ++i) {
+        if (!set.contains(this.dataStore[i])) {
+            tempSet.add(this.dataStore[i]);
+        }
+    }
+    return tempSet;
+}
+
+
+//定义map    
+function Map() {
+    this.container = {};
+}
+//将key-value放入map中    
+Map.prototype.put = function(key, value) {
+    try {
+        if (key != null && key != "")
+            this.container[key] = value;
+    } catch (e) {
+        return e;
+    }
+};
+ 
+//根据key从map中取出对应的value    
+Map.prototype.get = function(key) {
+    try {
+        return this.container[key];
+    } catch (e) {
+        return e;
+    }
+};
+ 
+//删除map中指定的key    
+Map.prototype.remove = function(key) {
+    try {
+        delete this.container[key];
+    } catch (e) {
+        return e;
+    }
+};
+ 
+//获取map的大小    
+Map.prototype.size = function() {
+ 
+    return this.keySet().length;
+}
+ 
+//返回map中的key值数组    
+Map.prototype.keySet = function() {
+    var keys = new Array();
+    for ( var p in this.container) {
+        keys.push(p);
+    }
+ 
+    return keys;
+}
+ 
+//返回map中的values值数组    
+Map.prototype.values = function() {
+    var valuesArray = new Array();
+    var keys = this.keySet();
+    for (var i = 0; i < keys.length; i++) {
+        valuesArray.push(this.container[keys[i]]);
+    }
+    return valuesArray;
+}
+</script>

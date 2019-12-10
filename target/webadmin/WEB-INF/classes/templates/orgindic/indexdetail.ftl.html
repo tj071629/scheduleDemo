@@ -1,0 +1,129 @@
+<div class="bjui-pageContent">
+	<form id="fakepagerForm" data-toggle="ajaxsearch" method="post">
+    </form>
+		<p>
+			<label  class="control-label x85">指标基本信息</label>
+		</p>
+		<p>
+			<label  class="control-label x85">指标编号：</label>
+			<label  class=" x85">${indicInfo["id"]}</label>
+		</p>
+		<p>
+			<label  class="control-label x85">发起人：</label>
+			<label  class=" x85">${indicInfo["nickname"]!}</label>
+			<label  class="control-label x85">发起时间：</label>
+			<label  class=" x185">${indicInfo["reqdate"]!}</label>
+		</p>
+		<p>
+			<label  class="control-label x85">指标ID：</label>
+			<label  class=" x85">${indicInfo["indexid"]!}</label>
+			<label  class="control-label x85">官方名称：</label>
+			<label  class=" x185">${indicInfo["officialindexname"]!}</label>
+		</p>
+		<p>
+			<label  class="control-label x85">费用：</label>
+			<label  class=" x185">${indicInfo["fee"]!}</label>
+		</p>
+		<p>
+			<label  class="control-label x85">申请标题：</label>
+			<label  class=" x185">${indicInfo["indexname"]!}</label>
+		</p>
+		<p>
+			<label  class="control-label x85">附件：
+			</label>
+			<label  class=" x185">
+				<#if accessoryList?? && (accessoryList?size > 0) >
+					<#list accessoryList as file>
+						<a href="${ctx}organ/download?fileid=${file["id"]}&uid=${file["userid"]}">
+							${file.filename}&nbsp;&nbsp;<br>
+						</a>
+					</#list>
+				<#else>
+						无
+				</#if>  
+			</label>
+		</p>
+		<p>
+			<label  class="control-label x85">申请描述：</label>
+			<div class="content">
+				${indicInfo["desctext"]!}
+			</div>
+		</p>
+		<#if (indicInfo.status == -2) >
+			<p>
+				<label  class="control-label x85">拒绝原因：</label>
+				<div class="content">
+					${indicInfo["denydesc"]!}
+				</div>
+			</p>
+		 </#if>  
+		<p id="payment">
+			<#if (indicInfo.status == 10) >
+					<button type="botton" class="btn-default" onclick="paymentfail()">付款失败</button>
+			</#if>  
+		</p>
+		<p id="buttonid">
+			<#if (indicInfo.status == 0) >
+			    <button type="botton" class="btn-default" onclick="pass()">通过</button>
+			    <button type="botton" class="btn-default" onclick="deny()">拒绝</button>
+		   </#if>  
+		</p>
+</div>
+<div class="bjui-pageFooter">
+</div>
+<style>
+.content{
+	margin-left:20px;
+	border:1px solid #eee;
+	padding:5px;
+	min-height:100px;
+}
+</style>
+<script>
+function deny(){
+	var url='${ctx}organ/deny';
+	var denydesc = window.prompt("请输入拒绝原因","");
+	var params={id:${indicInfo["id"]},status:-2,denydesc:denydesc};
+	if (denydesc !== null || denydesc !== undefined || denydesc !== '') { 
+		saveStauts(url,params);
+	}else{
+		alert("原因不能为空")
+	}
+}
+function pass(){
+	var url='${ctx}organ/pass';
+	var officialindexname = window.prompt("请输入指标名称","");
+	var fee = window.prompt("请输入费用价格","");
+	var params={id:${indicInfo["id"]},status:10,fee:fee,officialindexname:officialindexname};
+	if (officialindexname !== null || officialindexname !== undefined || officialindexname !== '') { 
+		saveStauts(url,params);
+	}else{
+		alert("指标名称不能为空")
+	}
+}
+function paymentfail(){
+	var url='${ctx}organ/savestatus';
+	var params={id:${indicInfo["id"]},status:-3};
+	saveStauts(url,params);
+}
+
+
+function saveStauts(url,params){
+	var callback=function(rtndata){
+		var sucess=rtndata.sucess;
+		if(sucess == 1){
+			<#if (indicInfo.status == 10) >
+				$("#payment").hide()
+			<#else>
+				$("#buttonid").hide()
+			</#if> 
+			altmsg("保存成功","保存成功",function(){
+			});
+		}else{
+			altmsg("保存失败","保存失败,请联系管理员!",function(){
+			});
+		}
+	}
+	querydata(url,params,callback);
+}
+</script>

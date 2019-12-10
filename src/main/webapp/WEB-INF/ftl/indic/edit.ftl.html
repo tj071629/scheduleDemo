@@ -1,0 +1,115 @@
+<div class="bjui-pageContent">
+	<form id="fakepagerForm" data-toggle="ajaxsearch" method="post">
+    </form>
+	<!-- <form action="###" id="j_custom_form" data-toggle="validate"
+		data-alertmsg="false" onsubmit="return false;"> -->
+		<p><label  class="control-label x85">指标基本信息</label></p>
+		<p><label  class="control-label x85">指标编号：</label>
+			<label  class=" x85">${indicInfo["id"]}</label>
+			<label  class="control-label x85">发起时间：</label>
+			<label  class=" x185">${indicInfo["pubtime"]}</label>
+		</p>
+		<p><label  class="control-label x85">发起人：</label>
+			<label  class=" x85">${indicInfo["nickname"]!}</label>
+			<label  class="control-label x85">指标属性：</label>
+			<label  class=" x185">${indicInfo["indicdesc"]}</label>
+		</p>
+		<p><label  class="control-label x85">指标名称：</label>
+			<label  class=" x85">${indicInfo["title"]!}</label>
+		</p>
+		<p><label  class="control-label x85">指标描述：</label>
+		<div class="content">
+			${indicInfo["content"]!}
+		</div>
+		</p>
+		<p><label  class="control-label x85">审核信息</label>
+		</p>
+		<p>
+		<label  class="control-label x85">审核状态：</label>
+		<label  class=" x85">${indicInfo["approvalstatus"]!}</label>
+		<label  class="control-label x85">审核人：</label>
+		<label  class=" x85">${indicInfo["adminname"]!}</label>
+		</p>
+		
+		<p>
+		<label  class="control-label x85">审核日期：</label>
+		<label  class=" x85">${(indicinfo["approvaltime"]?string("yyyy-MM-dd"))!}</label>
+		</p>
+		<p>
+		<label  class="control-label x85">备注信息：</label>
+		<div>
+		<textarea id="desctext" rows="3" cols="80">
+		${indicInfo["desctext"]!}
+		</textarea>
+		</div>
+		</p>
+		<#if (indicInfo.result == 10||indicInfo.result == -2)&&indicInfo.devfeetype==1 >
+		<p>
+		<label for="j_custom_name" class="control-label x85">开发费用：</label>
+		<input type="text"  name="" id="devfee"
+						value="" data-rule="required" size="15">
+		</p>
+		</#if>
+	<!-- </form> -->
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="botton" class="btn-default" onclick="acceptindic()">通过</button></li>
+        <li><button type="botton" class="btn-default" onclick="deny()">拒绝</button></li>
+    </ul>
+</div>
+<style>
+.content{
+	margin-left:20px;
+	border:1px solid #eee;
+	padding:5px;
+	min-height:100px;
+}
+</style>
+<script>
+function deny(){
+	var str = window.prompt("请输入拒绝原因","");
+	if(str){
+		<#if indicInfo.result == -100||indicInfo.result == -1>
+		var result=-1;
+		</#if>
+		<#if indicInfo.result == 10||indicInfo.result == -2>
+		var result=-2;
+		</#if>
+		var desctext=$("#desctext").val();
+		saveApprovalStats(result,desctext,str);
+	}
+}
+
+function acceptindic(){
+	<#if indicInfo.result == -100||indicInfo.result == -1>
+	var result=10;
+	</#if>
+	<#if indicInfo.result == 10||indicInfo.result == -2>
+	var result=20;
+	</#if>
+	var desctext=$("#desctext").val();
+	saveApprovalStats(result,desctext,'');
+}
+
+function saveApprovalStats(approvalresult,desctext,denytext){
+	var devfee=0;
+	<#if indicInfo.result == -100||indicInfo.result == -1>
+	var url='${ctx}indic/approval/docheck/stepone';
+	</#if>
+	<#if indicInfo.result == 10||indicInfo.result == -2>
+	var url='${ctx}indic/approval/docheck/steptwo';
+	devfee=$("#devfee").val();
+	</#if>
+	var params={indicid:${indicid},result:approvalresult,desc:desctext,denytext:denytext,devfee:devfee};
+	var callback=function(rtndata){
+		var sucess=rtndata.sucess;
+		if(sucess){
+			altmsg("保存成功","保存成功",function(){
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+</script>

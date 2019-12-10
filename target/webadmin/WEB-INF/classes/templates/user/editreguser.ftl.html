@@ -1,0 +1,133 @@
+<div class="bjui-pageContent">
+		<form class="cmxform" id="reguserForm" method="get" action="" autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+				<tr>
+					<td><label for="j_organ_codevalid" class="control-label x120">用户名：</label>
+						<input type="text"  name="loginid" id="j_loginid"
+						value="${(reguser.loginid)!}" data-rule="required;" size="15"
+						<#if reguserid?? && reguserid != -1>
+						readonly="readonly"
+						</#if>>
+						&nbsp;<font color='red'>*
+						</td>
+				</tr>
+                
+                <tr>
+					<td><label for="" class="control-label x120">账号类型：</label> 
+						<input
+						type="radio" name="accounttype" id="j_reguser_accounttype1"
+						data-toggle="icheck" value="false"
+						<#if reguser.orgid?? && reguser.orgid &gt; 0>
+						checked 
+						</#if>
+						data-label="机构"> 
+						<input type="radio"
+						<#if reguser.orgid?? && reguser.orgid &lt; 0>
+						checked
+						</#if>
+						name="accounttype" id="j_reguser_accounttype2"
+						data-toggle="icheck" value="true" data-label="个人">
+						&nbsp;<font color='red'>*
+						</td>
+				</tr>
+                
+                <tr>
+					<td><label for="j_organ_phone" class="control-label x120">手机号：</label>
+						<input type="text"  name="cellphone" id="cellphone"
+						value="${(reguser.phone)!}" size="15"
+						<#if reguserid?? && reguserid != -1>
+						readonly="readonly"
+						</#if>>
+						</td>
+				</tr>
+                <tr>
+					<td><label for="j_organ_email" class="control-label x120">邮箱：</label>
+						<input type="text"  name="email" id="email"
+						value="${(reguser.email)!}" size="15"
+						<#if reguserid?? && reguserid != -1>
+						readonly="readonly"
+						</#if>>
+						</td>
+				</tr>
+                
+			</tbody>
+			
+		</table>
+		
+		<input type="hidden" name="reguserid" value="${(reguserid)!}">
+		<br />
+		<div align="center"><button type="button" id="savereguser" class="btn-default" data-icon="save">保存</button></div>
+		
+</form>
+
+
+</div>
+
+
+<script>
+
+
+//校验表单
+$('#reguserForm').validator({
+	rules: {
+		//自定义一个规则，用来代替remote（注意：要把$.ajax()返回出来）
+        loginid: function(element){
+            return $.ajax({
+                url: '${ctx}user/isexistloginid',
+                type: 'post',
+                data: 'loginid='+$("#j_loginid").val()+'&reguserid=${(reguserid)!?c}',
+                dataType: 'text',
+                success: function(d){
+                }
+            });
+        },
+		cellphone: [/^1[3458]\d{9}$/, '请检查手机号格式'],
+		email: [/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/, '请检查邮箱格式']
+    },
+    fields: {
+        'loginid': 'required; loginid;',
+        'accounttype': 'required;',
+        'cellphone': 'cellphone;',
+        'email': 'email;'
+    },
+    valid: function(form){
+    	//触发提交后台操作
+    	savereguser();
+    }
+}).on("click", "#savereguser", function(e){
+    $(e.delegateTarget).trigger("validate");
+});
+
+function savereguser(){
+	
+	var reguserid='${(reguserid)!?c}';
+	var orgid='${(reguser.orgid)!?c}';
+	
+	var loginid=$("#j_loginid").val();
+	
+	var phone=$("#cellphone").val();
+	var email=$("#email").val();
+	
+	var url='${ctx}user/savereguser';
+	var params={reguserid:reguserid,loginid:loginid,orgid:orgid,phone:phone,email:email};
+	var callback=function(rtndata){
+		
+		var success=rtndata.success;
+		if(success){
+			altmsg("保存成功！","保存成功",function(){
+			});
+			
+			$(this).dialog('close', 'editreguser');	//关闭dialog
+			
+			$("#pagerForm").submit();
+			
+		}
+		
+	}
+	querydata(url,params,callback);
+	
+}
+
+
+</script>

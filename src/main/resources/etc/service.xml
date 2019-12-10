@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans         
+        http://www.springframework.org/schema/beans/spring-beans.xsd         
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<bean id="userService" class="com.eb.admin.service.impl.UserServiceImpl" />
+	<bean id="userIndexCountService" class="com.eb.admin.service.impl.UserIndexCountServiceImpl"></bean>
+	<bean id="organService" class="com.eb.admin.service.impl.OrganServiceImpl"></bean>
+	<bean id="messageService" class="com.eb.admin.service.impl.MessageServiceImpl"></bean>
+	<bean id="scheduleService" class="com.eb.admin.service.impl.ScheduleServiceImpl"></bean>
+	<bean id="roleService" class="com.eb.admin.service.impl.RoleServiceImpl" />
+	<bean id="configService" class="com.eb.admin.service.impl.ConfigServiceImpl" />
+	<bean id="userMsgService" class="com.eb.admin.service.impl.UserMsgServiceImpl" />
+	<bean id="userPriService" class="com.eb.admin.service.impl.UserPriServiceImpl" />
+	<bean id="jobFactory" class="com.eb.admin.task.JobFactory"></bean>  
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
+        <property name="jobFactory" ref="jobFactory"></property>  
+    </bean>  
+	<bean id="commonFilter" class="com.eb.admin.controller.CommonFilter">
+		<property name="userService" ref="userService" />
+		<property name="roleService" ref="roleService" />
+	</bean>
+
+	<bean id="authfilter" class="com.eb.admin.controller.UserAuthFilter">
+		<property name="userPriService" ref="userPriService" />
+	</bean>
+		
+</beans>

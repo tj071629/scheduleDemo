@@ -1,0 +1,27 @@
+<div class="bjui-pageContent">
+		<p><label  class="control-label x85">角色名称：</label>
+			<input type="text"  name="rolename" id="rolename"
+						value="${role.name!}" data-rule="required" size="15">		
+		</p>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="botton" class="btn-default" onclick="saverole()">保存</button></li>
+    </ul>
+</div>
+<script>
+function saverole(){
+	var url='${ctx}admin/saverole';
+	var name=$("#rolename").val();
+	var params={roleid:${roleid},name:name};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success){
+			altmsg("保存成功","保存成功",function(){
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+</script>

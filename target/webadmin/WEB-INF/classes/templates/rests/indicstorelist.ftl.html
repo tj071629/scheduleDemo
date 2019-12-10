@@ -1,0 +1,147 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}indicstore/list.html" method="post">
+   		<input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+        	<label class="control-label x85">指标名称：</label>
+            <select id="indicname" name="indicname" style="width:150px;"></select>
+  			<button type="button" class="btn-default"  onclick='add()'>添 加</button>&nbsp; 
+  			<button type="submit" class="btn-default" data-icon="search">刷 新</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center">编号</th>
+                <th align="center">指标ID</th>
+                <th align="center">指标名称</th>
+                <th align="center">创建日期</th>
+                <th align="center">指标状态</th>
+                <th align="center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	 <#list result.list as indicstoreinfo>
+	        	<tr>
+	        		<td align="center">${indicstoreinfo_index+1}</td>
+	                <td align="center">${indicstoreinfo["indicid"]}</td>
+	                <td align="center">${indicstoreinfo["name"]!}</td>
+	                <td align="center">${(indicstoreinfo["createdate"]?string("yyyy-MM-dd"))!}</td>
+	                <td align="center">
+	                	  <#if (indicstoreinfo.status == 0) >
+						       添加成功
+						  <#elseif (indicstoreinfo.status == 1)>  
+						  <font style="color:#3CB371"> 已经启动</font> 
+						  <#elseif (indicstoreinfo.status == 2)>  
+						  <font style="color:#EEB422"> 队列中...</font> 
+						  <#elseif (indicstoreinfo.status == 3)>  
+						  <font style="color:#FF0000"> 同步中...</font> 
+						  <#elseif (indicstoreinfo.status == 4)>  
+						  <font style="color:#3CB371"> 同步完成</font> 
+						  <#else>
+						     异常
+						  </#if>
+	                </td>
+	                <td align="center">
+                	 	 <button type="button" class="btn-default"  onclick="start(${indicstoreinfo["indicid"]})" 
+                	 	 <#if (indicstoreinfo.status == 2 || indicstoreinfo.status == 3 || indicstoreinfo.status == 1 ) >
+                	 	 	disabled="disabled"
+                	 	 </#if>
+	                	 >启  动 
+	                	 </button>&nbsp;
+	                	 <button type="button" class="btn-default"  onclick="del(${indicstoreinfo["indicid"]})" 
+	                	 	 <#if (indicstoreinfo.status == 2 || indicstoreinfo.status == 3 || indicstoreinfo.status == 1) >
+	                	 	 	disabled="disabled"
+	                	 	 </#if>
+	                	 >移  除
+	                	 </button>&nbsp;
+	        		</td>
+	        	</tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+	<div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+<script>
+function refreshData(){
+	$("#pagerForm").submit();
+};
+function add(){
+	var posturl="${ctx}indicstore/add";
+	var indicid = $('#indicname option:selected').val();
+	var postdata={indicid:indicid};
+	$.ajax({
+		type : "POST",
+		url : posturl,
+		data : postdata,
+		contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+		dataType : "json",
+		success : function(rtndata) {
+			if (rtndata.status == 1) {
+				refreshData();
+			}
+			var returninfo = rtndata.returninfo;
+			$("body").alertmsg('info', returninfo,{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+		}
+	}) 
+	//重新加载下拉框
+	indicnamelist();
+};
+function setstatus(posturl,postdata){
+	 $.ajax({
+		type : "POST",
+		url : posturl,
+		data : postdata,
+		contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+		dataType : "json",
+		success : function(rtndata) {
+			if (rtndata.status == 1) {
+				refreshData();
+			}
+			var returninfo = rtndata.returninfo;
+			$("body").alertmsg('info', returninfo,{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+		}
+	})
+};
+
+function start(indicid){
+	var posturl="${ctx}indicstore/start";
+	var postdata={indicid:indicid};
+	setstatus(posturl,postdata);
+};
+function suspend(indicid){
+	var posturl="${ctx}indicstore/suspend";
+	var postdata={indicid:indicid};
+	setstatus(posturl,postdata);
+};
+function del(indicid){
+	var posturl="${ctx}indicstore/del";
+	var postdata={indicid:indicid};
+	setstatus(posturl,postdata);
+};
+indicnamelist();
+function indicnamelist(){
+	var posturl='${ctx}indicstore/indicnamelist';
+	$.ajax( {
+		url : posturl,
+		type : "POST",
+		dataType : "json",
+		success : function(data){
+			var str = "";
+			jQuery.each(data.indicnamelist, function(i,item){  
+               str += "<option name ='indicname' value='"+item.indicid+"'>"+item.name+"_"+item.indicid+"</option>";
+            }); 
+			$("#indicname").append(str);
+		}
+	});
+}
+</script>

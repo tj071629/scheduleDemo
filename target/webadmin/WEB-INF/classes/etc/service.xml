@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans         
+        http://www.springframework.org/schema/beans/spring-beans.xsd         
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<bean id="userService" class="com.eb.admin.service.impl.UserServiceImpl" />
+	<bean id="forumIndexService" class="com.eb.admin.service.impl.ForumIndexServiceImpl">
+		<property name="userService" ref="userService" />
+	</bean>
+	<bean id="userIndexCountService" class="com.eb.admin.service.impl.UserIndexCountServiceImpl"></bean>
+	<bean id="organIndexService" class="com.eb.admin.service.impl.OrganIndexServiceImpl"></bean>
+	<bean id="organCodeService" class="com.eb.admin.service.impl.OrganCodeServiceImpl"></bean>
+	<bean id="organService" class="com.eb.admin.service.impl.OrganServiceImpl"></bean>
+	<bean id="messageService" class="com.eb.admin.service.impl.MessageServiceImpl"></bean>
+	<bean id="feedbackProcessService" class="com.eb.admin.service.impl.FeedbackProcessServiceImpl" />
+	<bean id="onlineIndexService" class="com.eb.admin.service.impl.OnlineIndexServiceImpl" />
+	<bean id="indicStoreService" class="com.eb.admin.service.impl.IndicStoreServiceImpl" />
+	<bean id="restsService" class="com.eb.admin.service.impl.RestsServiceImpl" />
+	<bean id="forumService" class="com.eb.admin.service.impl.ForumServiceImpl" />
+	<bean id="indicProcessService" class="com.eb.admin.service.impl.IndicProcessServiceImpl" />
+	<bean id="userMsgService" class="com.eb.admin.service.impl.UserMsgServiceImpl" />
+	<bean id="userPriService" class="com.eb.admin.service.impl.UserPriServiceImpl" />
+	<bean id="roleService" class="com.eb.admin.service.impl.RoleServiceImpl" />
+
+	<bean id="commonFilter" class="com.eb.admin.controller.CommonFilter">
+		<property name="userService" ref="userService" />
+		<property name="roleService" ref="roleService" />
+	</bean>
+
+	<bean id="authfilter" class="com.eb.admin.controller.UserAuthFilter">
+		<property name="userPriService" ref="userPriService" />
+	</bean>
+
+	<bean id="freeIndicVoteProcessTask" class="com.eb.admin.task.IndicTask"
+		init-method="start">
+		<property name="indicProcessService" ref="indicProcessService" />
+		<property name="forumIndexService" ref="forumIndexService" />
+	</bean>
+	
+	
+	<bean id="simCodeSyncTask" class="com.eb.admin.task.SimCodeSyncTask"
+		init-method="start">
+		<property name="userService" ref="userService" />
+	</bean>
+	
+	<bean id="accountExpireTask" class="com.eb.admin.task.AccountExpireTask"
+		init-method="start">
+		<property name="userService" ref="userService" />
+		<property name="userMsgService" ref="userMsgService" />
+	</bean>
+	
+	<bean id="smsAttractTask" class="com.eb.admin.task.SmsAttractTask"
+		init-method="start">
+		<property name="userService" ref="userService" />
+		<property name="userMsgService" ref="userMsgService" />
+	</bean>
+	
+	<!-- 注册码过期自动失效已在前台判定 定时任务暂时注释  by Jason.Y at 2018/03/14-->
+	<!-- <bean id="codeExpireTask" class="com.eb.admin.task.CodeExpireTask"
+		init-method="start">
+		<property name="organCodeService" ref="organCodeService" />
+	</bean> -->
+	
+	<bean id="organChangePersonalTask" class="com.eb.admin.task.OrganChangePersonalTask"
+		init-method="start">
+		<property name="userService" ref="userService" />
+	</bean>
+	
+	<bean id="syncAddressByIpTask" class="com.eb.admin.task.SyncAddressByIpTask"
+		init-method="start">
+		<property name="userService" ref="userService" />
+	</bean>
+</beans>

@@ -1,0 +1,75 @@
+<div class="bjui-pageContent">
+	<form action="###" id="j_custom_form" data-toggle="validate"
+		data-alertmsg="false">
+		<p><label  class="control-label x85">反馈基本信息</label></p>
+		<p><label  class="control-label x85">反馈编号：</label>
+			<label  class=" x85">${freebackInfo["id"]}</label>
+			<label  class="control-label x85">发起时间：</label>
+			<label  class=" x185">${freebackInfo["crtdate"]}</label>
+		</p>
+		<p><label  class="control-label x85">发起人：</label>
+			<label  class=" x85">${freebackInfo["nickname"]!}</label>
+		</p>
+		<p><label  class="control-label x85">反馈名称：</label>
+			<label  class=" x85">
+					${freebackInfo["title"]!}
+			</label>
+		</p>
+		<p><label  class="control-label x85">反馈描述：</label>
+		<div class="content" id="content" >
+			${freebackInfo["content"]!}
+		</div>
+		</p>
+	</form>
+</div>
+<div class="bjui-pageFooter">
+	<ul>
+		<li><div class="btn-default" onclick="reply()" style="high:100%"><font size="1"><b>回 复</b></font></div></li>
+	</ul>
+</div>
+
+<style>
+.content{
+	margin-left:20px;
+	border:1px solid #eee;
+	padding:5px;
+	min-height:100px;
+}
+img{
+ 	width:  50%;
+    height: 50%;
+}
+</style>
+<script>
+function reply(){
+	var status = ${freebackInfo["status"]};
+	if(status == 0){
+		var str = window.prompt("回复内容 :","");
+		if (str!=null && str!=""){
+			addcmttext(str);
+		}
+	}else{
+		alert("已经回复成功,请勿重复操作!")
+	}
+}
+function addcmttext(cmttext){
+	var posturl="${ctx}feeback/savecmttext";
+	var postdata={freebackid:${freebackid},cmttext:cmttext};
+	$.ajax({
+		type : "POST",
+		url : posturl,
+		data : postdata,
+		contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+		async:true,
+		dataType : "json",
+		success : function(rtndata) {
+			if(rtndata.success){
+				$("body").alertmsg('info', '回复成功！',{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+			}else{
+				$("body").alertmsg('info', '回复失败,请联系管理员！',{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+			}
+		}
+	});
+	
+}
+</script>

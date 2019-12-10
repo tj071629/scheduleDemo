@@ -1,0 +1,116 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}message/messagetemplatelist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+        	<button type="button" style="float:left;margin-right:30px;" class="btn-green" data-icon="plus" onclick='addmessagetemplate(this)'>添 加</button>&nbsp;
+            <label>模板类型:</label>
+            <select data-toggle="selectpicker" name="templatetype">
+                <option value="99">全部</option>
+                <option value="0">消息</option>
+                <option value="1">通知</option>
+                <option value="2">邮件</option>
+                <option value="3">短信</option>
+            </select>&nbsp;
+            <label>模板名称:</label>
+            <input type="text" style="width:150px;" name="templatename" value="${templatename!}"/>
+            <label>模板内容:</label>
+            <input type="text" style="width:150px;" name="content" value="${content!}"/>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center">序号</th>
+                <th align="center">模板名称</th>
+                <th align="center">模板类型</th>
+                <th align="center">模板内容</th>
+                <th align="center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as message>
+            <tr align="center">
+            	<td>${message_index+1+((result.pageinfo.currpage-1)*result.pageinfo.rowinpage)}</td>
+                <td>${message.templatename!}</td>
+                
+                <td>
+                <#if (message.type)! == 0>
+				  消息
+				<#elseif (message.type)! == 1>
+				  通知
+				<#elseif (message.type)! == 2>
+				  邮件
+				<#else>
+				  短信
+				</#if>
+                </td>
+                
+                <td align="left">${(message.content)!}</td>
+                <td>
+                
+               	<button type="button" class="btn-green" onclick='editmessage(this, "${(message.id?c)!}", "${(message.organid?c)!}", "${(message.deleted)!}")'>编辑</button>
+               	<!-- <button type="button" class="btn-red" onclick='delmessage("${(message.id)!}","${(message.deleted)!}")'>删除</button> -->
+                
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+function addmessagetemplate(obj){
+	$(obj).dialog({id:'addmessagetemplate', width:900, height:588, url:'${ctx}message/editmessagetemplate.html', title:'添加消息模板'});
+}
+
+function editmessage(obj,templateid){
+	
+	/* if(deleted == 1){
+		$("body").alertmsg('info', "编辑失败,当前模板已被删除",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+		return;
+	} */
+	
+	$(obj).dialog({id:'editmessagetemplate', width:900, height:588, url:'${ctx}message/editmessagetemplate.html?templateid='+templateid, title:'消息模板编辑'});
+}
+
+function refreshData(){
+	$("#pagerForm").submit();
+};
+
+/* function delmessage(messageid,deleted){
+	
+	if(deleted == 1){
+		$("body").alertmsg('info', "删除失败,当前激活码已被删除",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+		return;
+		
+	}else{
+		
+		$("body").alertmsg('confirm', '确认删除当前机构注册码？', {
+			okCall : function() {
+				
+				var url='${ctx}message/delmessage';
+				var params={id:messageid};
+				var callback=function(rtndata){
+					var success=rtndata.success;
+					refreshData();
+				}
+				querydata(url,params,callback);
+				
+			}
+		})
+	}
+} */
+</script>

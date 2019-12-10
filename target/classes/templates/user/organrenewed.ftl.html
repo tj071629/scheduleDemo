@@ -1,0 +1,56 @@
+<div class="bjui-pageContent">
+	<form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}user/organrenewed.html" method="post">
+        <input type="hidden" name="userid" value="${user["id"]?c}">
+    </form>
+	<form action="#" method="get" id="j_addonlineindex_form" data-toggle="validate" data-alertmsg="false"> 
+		<p><label  class="control-label x85">试用账号信息:</label></p>
+		<p><label  class="control-label x85">账号ID:</label>
+			<label  class=" x85">${user["id"]?c}</label>
+		</p>
+		<p><label  class="control-label x85">账号昵称：</label>
+			<label  class=" x85">${user["nickname"]}</label>
+		</p>
+		<p><label  class="control-label x85">有效期至：</label>
+			<label  class=" x85">${(user["enddate"]?string("yyyy-MM-dd"))!}</label>
+		</p>
+		<p><label  class="control-label x85">试用延期至：</label>
+			 <input type="text" name="enddate" id="enddate"   data-toggle="datepicker"  value="${(user["enddate"]?string("yyyy-MM-dd"))!}" size="15">
+		</p>
+	</form> 
+		<button id="saveindex"  onclick="saveEndDate()"   class="btn-default" data-icon="save">保 存</button>&nbsp;
+</div>
+<script>
+function refreshData(){
+	$("#pagerForm").submit();
+};
+function saveEndDate(){
+	var posturl="${ctx}user/savedate";
+	var userid=${user["id"]?c};
+	var enddate=$("#enddate").val();
+    var postdata={userid:userid,enddate:enddate};
+	 $.ajax({
+		type : "POST",
+		url : posturl,
+		data : postdata,
+		contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+		async:true,
+		dataType : "json",
+		beforeSend: function () {
+	        $("#saveindex").attr({ disabled: "disabled" });
+	    },
+		success : function(rtndata) {
+			if (rtndata.success == 1) {
+				$("body").alertmsg('info', '续期成功！',{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+				refreshData();
+			}else if(rtndata.success == -2){
+				$("body").alertmsg('info', "续期后日期时间选择有误!",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+			}else{
+				$("body").alertmsg('info', "续期失败,请联系管理员!",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+			}
+		},
+	 	complete: function () {
+	        $("#saveindex").removeAttr("disabled");
+	    }
+	});
+}
+</script>

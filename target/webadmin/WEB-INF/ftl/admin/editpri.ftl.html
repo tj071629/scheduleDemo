@@ -1,0 +1,32 @@
+<div class="bjui-pageContent">
+		<p><label  class="control-label x85">权限名称：</label>
+			<input type="text"  name="priname" id="priname"
+						value="${pri.priname!}" data-rule="required" size="15">		
+		</p>
+		<p><label  class="control-label x85">uri：</label>
+			<input type="text"  name="uri" id="uri"
+						value="${pri.uri!}" data-rule="required" size="15">		
+		</p>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="botton" class="btn-default" onclick="savepri()">保存</button></li>
+    </ul>
+</div>
+<script>
+function savepri(){
+	var url='${ctx}admin/savepri';
+	var name=$("#priname").val();
+	var uri=$("#uri").val();
+	var params={priid:${priid},priname:name,uri:uri};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success){
+			altmsg("保存成功","保存成功",function(){
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+</script>

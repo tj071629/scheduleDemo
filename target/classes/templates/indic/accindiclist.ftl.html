@@ -1,0 +1,91 @@
+<div class="bjui-pageHeader">
+    <form id="accindicPagerForm" data-toggle="ajaxsearch" action="${ctx}indic/accindiclist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+            <label>公开属性:</label>
+            <select data-toggle="selectpicker"  data-width="100" class="privated" name="privated">
+                <option value="-1">全部</option>
+                <option value="0">公开</option>
+                <option value="1">私有</option>
+            </select>&nbsp;
+            <label>专属:</label>
+            <select data-toggle="selectpicker" data-width="100"  class="devfeetype"  name="devfeetype">
+                <option value="-1">全部</option>
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </select>&nbsp;
+            
+            <label>收费:</label>
+            <select data-toggle="selectpicker" data-width="100"  class="feetype"  name="feetype">
+                <option value="-1">全部</option>
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </select>&nbsp;
+            <label>验收状态:</label>
+            <select data-toggle="selectpicker" data-width="100"  class="accstatus" name="accstatus">
+                <option value="1">全部</option>
+                <option value="6">取消验收</option>
+                <option value="60">待验收</option>
+                <option value="65">待验收</option>
+            </select>&nbsp;
+            <label>二审状态:</label>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th>指标编号</th>
+                <th>发起日期</th>
+                <th>指标名称</th>
+                <th>发起人</th>
+                <th>审核状态</th>
+                <th>审核负责人</th>
+                <th>查看</th>
+                <th>编辑</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as indicinfo>
+        		<tr>
+	                <td>${indicinfo["id"]?c}</td>
+	                <td>${indicinfo["pubtime"]!}</td>
+	                <td>${indicinfo["title"]}</td>
+	                <td>${indicinfo["nickname"]!}</td>
+	                <td>${indicinfo["statusname"]!}</td>
+	                <td>${indicinfo["adminname"]!}</td>
+	                <td><button type="button" class="btn-green" onclick='opendevdetail(this,${indicinfo["id"]?c})'>查看</button></td>
+               		<td><button type="button" class="btn-blue" onclick='editaccdetail(this,${indicinfo["id"]?c})'>审核</button></td>
+	            </tr>
+            </#list>
+        	
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+setTimeout(function(){
+	$(".privated").selectpicker('val', '${privated!}');
+	$(".feetype").selectpicker('val', '${feetype!}');
+	$(".devfeetype").selectpicker('val', '${devfeetype!}');
+	$(".accstatus").selectpicker('val', '${accstatus!}');
+},200);
+function opendevdetail(obj,indicid){
+	$(obj).dialog({id:'indicdevdetail', width:1166, height:755, url:'${ctx}indic/devdetail.html?indicid='+indicid, title:'指标开发详情'});
+}
+
+function editaccdetail(obj,indicid){
+	$(obj).dialog({id:'indicdeveditdetail', width:1166, height:755, url:'${ctx}indic/accedit.html?indicid='+indicid, title:'指标审核'});
+}
+</script>

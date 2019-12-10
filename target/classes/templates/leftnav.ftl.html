@@ -1,0 +1,65 @@
+<button type="button" class="btn-default bjui-hnav-more-left" title="导航菜单左移"><i class="fa fa-angle-double-left"></i></button>
+            <div id="bjui-hnav-navbar-box">
+                <ul id="bjui-hnav-navbar">
+                    <li class="active"><a href="javascript:;" data-toggle="slidebar">网站管理</a>
+                        <div class="items hide" data-noinit="true">
+                        	
+                        	<#assign userMap=Session.userprimap/>
+							<#assign keys=userMap?keys/>
+
+							<#if keys?seq_contains("管理首页")>
+                            <ul data-tit="管理首页" class="menu-items" data-faicon="hand-o-up">
+                            
+                            	<#if keys?seq_contains("我的主页")>
+                                <li><a data-options="{id:'form-input', faicon:'caret-square-o-down'}">我的主页</a></li>
+                                </#if>
+                                
+                            </ul>
+							</#if>
+                            
+                            
+                            <#if keys?seq_contains("运营管理")>
+                            <ul data-tit="运营管理"  class="menu-items" data-faicon="hand-o-up">
+                                
+                                <#if keys?seq_contains("任务调度")>
+                                <li><a  href="${ctx}schedule/schedulelist.html" data-options="{id:'schedulelist', faicon:'caret-square-o-down'}">任务调度</a></li>
+                                </#if>
+                                
+                            </ul>
+                            </#if>
+                            
+                            
+                            
+                            
+                            <#if keys?seq_contains("系统设置")>
+                            <ul data-tit="系统设置" class="menu-items" data-faicon="hand-o-up">
+                            
+                            	<#if keys?seq_contains("管理员管理")>
+	                        	<li><a  href="${ctx}admin/userlist.html" data-options="{id:'userlist', faicon:'caret-square-o-down'}">管理员管理</a></li>
+	                        	</#if>
+	                        	
+	                        	<#if keys?seq_contains("角色管理")>
+	                            <li><a href="${ctx}admin/rolelist.html"  data-options="{id:'rolelist', faicon:'caret-square-o-down'}">角色管理</a></li>
+	                            </#if>
+	                            
+	                            <#if keys?seq_contains("权限管理")>
+	                            <li><a href="${ctx}admin/prilist.html"  data-options="{id:'prilist', faicon:'caret-square-o-down'}">权限管理</a></li>
+	                            </#if>
+	                            
+	                        </ul>
+	                        </#if>
+	                        
+	                        
+                        </div>
+                    </li>
+                    
+                    <li class="dropdown"><a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i> 系统设置 <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.1kmt.com/web/aboutUs/index.html" target="_blank" >关于我们</a></li>
+                            <li class="divider"></li>
+                            <li><a href="https://www.1kmt.com/" target="_blank" >友情链接</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <button type="button" class="btn-default bjui-hnav-more-right" title="导航菜单右移"><i class="fa fa-angle-double-right"></i></button>

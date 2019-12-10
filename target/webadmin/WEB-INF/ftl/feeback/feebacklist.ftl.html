@@ -1,0 +1,66 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}feeback/list.html" method="post">
+    	<input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+            <label>状态:</label>
+            <select data-toggle="selectpicker" class="feebackstatus" name="feebackstatus">
+                <option value="-1">全部</option>
+                <option value="1">已回复</option>
+                <option value="0">未回复</option>
+            </select>&nbsp;
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center">编号</th>
+                <th align="center">用户名</th>
+                <th align="center">发布时间</th>
+                <th align="center">标题</th>
+                <th align="center" style="width: 400px">内容</th>
+                <th align="center" style="width: 400px">回复内容</th>
+                <th align="center">状态</th>
+                <th align="center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+	       <#list result.list as freebackinfo>
+        	<tr>
+                <td align="center">${freebackinfo["id"]}</td>
+                <td align="center">${freebackinfo["nickname"]!}</td>
+                <td align="center" >${(freebackinfo["crtdate"]?string("yyyy-MM-dd"))!}</td>
+                <td >${freebackinfo["title"]!}</td>
+                <td  style="width: 400px">${freebackinfo["content"]!}</td>
+                <td  style="width: 400px">${freebackinfo["cmttext"]?default(' - ')}</td>
+                <td align="center">
+                	<#if freebackinfo["status"] gt 0 >  
+					   <font style="color:#3CB371">已回复</font> 
+					<#else>  
+					   未回复 
+					</#if>  
+                </td align="center">
+                <td align="center"><button type="button" class="btn-green" onclick='openfreebackdetail(this,${freebackinfo["id"]})'>查看</button></td>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+     <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+<script>
+setTimeout(function(){
+	$(".feebackstatus").selectpicker('val', '${status!}');
+},200);
+function openfreebackdetail(obj,freebackid){
+	$(obj).navtab({id:'indicdetail', url:'${ctx}feeback/detail.html?freebackid='+freebackid, title:'反馈详情'}); 
+} 
+</script>

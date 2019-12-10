@@ -1,0 +1,65 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}admin/rolelist.html" method="post">
+        <div class="bjui-searchBar">
+	        <button type="button" style="float:left;margin-right:15px;" class="btn-green" data-icon="plus" onclick='editrole(this,-1)'>添 加</button>&nbsp;	
+	        <label>角色名称:</label>
+            <input type="text" style="width:150px;" name="rolename" value="${rolename!}"/>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center" width="5%">编号</th>
+                <th>角色名称</th>
+                <th align="center" width="5%">授权</th>
+                <th align="center" width="8%">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list roleses as role>
+            <tr class="role_${role.id}">
+                <td align="center">${role.id}</td>
+                <td>${role.name}</td>
+                <td align="center"><button type="button" class="btn-green" onclick='editrolepri(this,${role.id})'>权限</button></td>
+                <td align="center">
+	                <button type="button" class="btn-green" onclick='editrole(this,${role.id})'>编辑</button>
+	                <button type="button" class="btn-red" onclick='delrole(this,${role.id})'>删除</button>
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<script>
+function editrolepri(obj,roleid){
+	$(obj).dialog({id:'priedit',  width:935, drawable: false, minable:false, maxable:false, height:860, url:'${ctx}admin/rolepri.html?roleid='+roleid, title:'权限编辑'});
+}
+
+function editrole(obj,roleid){
+	$(obj).dialog({id:'roleedit',  height:230,  url:'${ctx}admin/editrole.html?roleid='+roleid, title:'角色编辑'});
+}
+function delrole(obj,roleid){
+	
+	$("body").alertmsg('confirm', '角色删除后不可恢复，确认删除当前角色？', {
+		okCall : function() {
+			
+			var url='${ctx}admin/delrole';
+			var params={roleid:roleid};
+			var callback=function(rtndata){
+				var success=rtndata.success;
+				if(success){
+					altmsg("删除成功","删除成功",function(){
+					});
+					$(".role_"+roleid).remove();
+				}
+				
+			}
+			querydata(url,params,callback);
+			
+		}
+	})
+}
+</script>

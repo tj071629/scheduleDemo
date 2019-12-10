@@ -1,0 +1,88 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}organ/organlist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+        	<button type="button" style="float:left;margin-right:30px;" class="btn-green" data-icon="plus" onclick='addorgan(this)'>添 加</button>&nbsp;
+            <label>机构名称:</label>
+            <input type="text" style="width:110px;" name="organname" value="${organname!}"/>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center" width="5%">序号</th>
+                <th align="center">机构ID</th>
+                <th align="center">机构名称</th>
+                <th align="center">创建人</th>
+                <th align="center">创建时间</th>
+                <th align="center">绑定结果(已绑定/关联注册码总数)</th>
+                <th align="center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as organ>
+            <tr align="center">
+            	<td>${organ_index+1+((result.pageinfo.currpage-1)*result.pageinfo.rowinpage)}</td>
+                <td>${(organ.organid?c)!}</td>
+                <td>${(organ.organname)!}</td>
+                <td>${(organ.relationer)!}</td>
+                <td>${(organ.createdate)!}</td>
+                <td>${(organ.bindrate)!}</td>
+                <td>
+	               	<button type="button" class="btn-green" onclick='editorgan(this, "${(organ.organid?c)!}")'>编辑</button>
+	               	<button type="button" class="btn-green" onclick='bindcount(this, "${(organ.organid?c)!}")'>绑定详情</button>
+	               	<!-- <button type="button" class="btn-red" onclick='delorgan("${(organ.id)!}")'>删除</button> -->
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+function addorgan(obj){
+	
+	$(obj).dialog({id:'addorgan', height:230,  url:'${ctx}organ/editorgan.html', title:'机构新增'});
+}
+
+function editorgan(obj,organid){
+	
+	$(obj).dialog({id:'editorgan', height:230,  url:'${ctx}organ/editorgan.html?organid='+organid, title:'机构编辑'});
+}
+
+function bindcount(obj,organid){
+	
+	$(obj).dialog({id:'editorgan', width:1166, height:755,  url:'${ctx}organ/bindcountlist.html?organid='+organid, title:'绑定注册码查询'});
+}
+
+function refreshData(){
+	$("#pagerForm").submit();
+};
+
+/* function delorgan(organid){
+	
+	var r=confirm("确认删除当前机构注册码？");
+	if(r){
+		var url='${ctx}organ/delorgan';
+		var params={id:organid};
+		var callback=function(rtndata){
+			var success=rtndata.success;
+			refreshData();
+		}
+		querydata(url,params,callback);
+		
+	}
+} */
+</script>

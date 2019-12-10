@@ -1,0 +1,123 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}organ/indexlist.html" method="post">
+    	<input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+            <label>状态:</label>
+            <select data-toggle="selectpicker"  data-width="100" class="status" name="status">
+                <option name="status" value="-10">全部</option>
+                <option name="status" value="0">等待审核</option>
+                <option name="status" value="10">审核通过</option>
+                <option name="status" value="20">付款成功</option>
+                <option name="status" value="30">技术开发</option>
+                <option name="status" value="35">开发完成</option>
+                <option name="status" value="40">验收通过</option>
+                <option name="status" value="50">产品上线</option>
+                <option name="status" value="-2">审核拒绝</option>
+                <option name="status" value="-3">付款失败</option>
+                <option name="status" value="-5">付款到期</option>
+                <option name="status" value="-4">验收未通过</option>
+                <option name="status" value="-6">产品已下线</option>
+            </select>&nbsp;
+            <button type="submit" class="btn-default" >查 询</button>&nbsp;
+            <button  class="btn-default"  data-icon="search" onclick="refreshData()">刷 新</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true" id="data111">
+        <thead>
+            <tr>
+                <th align="center">序号</th>
+                <th align="center">指标ID</th>
+                <th align="center">指标名称</th>
+                <th align="center">用户名称</th>
+                <th align="center">申请标题</th>
+                <th align="center">发起日期</th>
+                <th align="center">指标状态</th>
+                <th align="center">页面状态</th>
+                <th align="center">查看</th>
+                <th align="center">操作</th>
+            </tr>
+        </thead>
+        <tbody >
+        <#list result.list as indicinfo>
+	        	<tr>
+	        		<td align="center">${indicinfo_index+1+(result.pageinfo.currpage-1)*20}</td>
+	                <td align="center">${indicinfo["indexid"]?default(' ')}</td>
+	        		<td align="center">${indicinfo["officialindexname"]!}</td>
+	                <td align="center">${indicinfo["nickname"]!}</td>
+	                <td align="center">${indicinfo["indexname"]!}</td>
+	                <td align="center">${(indicinfo["reqdate"]?string("yyyy-MM-dd"))!}</td>
+	                <td align="center">${indicinfo["statusname"]!}</td>
+	                <td align="center">${indicinfo["pagestatus"]!}</td>
+	                <td align="center">
+	                	<button type="button" class="btn-green" onclick='openindexdetail(this,${indicinfo["id"]})'>查  看</button>
+	                </td>
+	                <td align="center">
+	                	  <#if (indicinfo.status == 0) >
+						     <button type="button" class="btn-blue" onclick='openindexdetail(this,${indicinfo["id"]})'>审    核</button>
+						  <#elseif (indicinfo.status == -2)>  
+						  	 <button type="button" class="btn-default" disabled="disabled">审核拒绝</button>&nbsp;
+						  <#elseif (indicinfo.status == -4)>  
+						  	 <button type="button" class="btn-default" onclick='setstatus(40,${indicinfo["id"]})'>验收通过</button>&nbsp;
+						  <#elseif (indicinfo.status == 10)>  
+						  	<button type="button" class="btn-default" onclick='setstatus(20,${indicinfo["id"]})'>付费成功</button>&nbsp;
+	                		<!-- <button type="button" class="btn-default" onclick='setstatus(-3,${indicinfo["id"]})'>付费失败</button>&nbsp; -->
+						  <#elseif (indicinfo.status == 20)>  
+						    <button type="button" class="btn-default" onclick='setstatus(30,${indicinfo["id"]})'>技术开发</button>&nbsp;
+						  <#elseif (indicinfo.status == 30)>  
+						    <button type="button" class="btn-default" onclick='setstatus(35,${indicinfo["id"]})'>开发完成</button>&nbsp;
+						  <#elseif (indicinfo.status == 35)>  
+						    <button type="button" class="btn-default" onclick='setstatus(40,${indicinfo["id"]})'>验收通过</button>&nbsp;
+						  <#elseif (indicinfo.status == 40)>  
+						    <button type="button" class="btn-default" onclick='setstatus(50,${indicinfo["id"]})'>产品上线</button>&nbsp;
+						   <#elseif (indicinfo.status == 50)>  
+						    <button type="button" class="btn-default" disabled="disabled" >产品上线</button>&nbsp;
+						   <#elseif (indicinfo.status == -3)>  
+						    <button type="button" class="btn-default" disabled="disabled" >付款失败</button>&nbsp;
+						  </#if>
+               		</td>	
+	        	</tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+	<div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+<script>
+setTimeout(function(){
+	$(".status").selectpicker('val', '${status!}');
+},200);
+function refreshData(){
+	$("#pagerForm").submit();
+};
+function setstatus(status,id){
+	saveStauts(id,status);
+}
+function saveStauts(id,status){
+	var url='${ctx}organ/savestatus';
+	var params={id:id,status:status};
+	var callback=function(rtndata){
+		var sucess=rtndata.sucess;
+		if(sucess == 1){
+			refreshData();
+			altmsg("保存成功","保存成功",function(){
+			});
+		}else{
+			altmsg("保存失败,请联系管理员!","保存失败",function(){
+			});
+		}
+	}
+	querydata(url,params,callback);
+}
+function openindexdetail(obj,id){
+	$(obj).navtab({id:'indicdetail', url:'${ctx}organ/indexdetail.html?id='+id, title:'指标审核'});
+}
+</script>

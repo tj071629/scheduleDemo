@@ -1,0 +1,55 @@
+<div class="bjui-pageContent">
+	<form class="cmxform" id="editroleForm" method="get" action="${ctx}admin/rolelist.html" autocomplete="off">
+			<table width="100%">
+	                
+	                
+	                <tr>
+	                	<td><label  class="control-label x85">角色名称：</label>
+	                		<input type="text"  name="rolename" id="rolename"
+							value="${role.name!}" data-rule="required" size="15"></td>
+	                </tr>
+	                
+				
+			</table>
+	
+			<br/><br/>
+			
+			<div align="center"><button type="button" id="saverole" class="btn-default" data-icon="save">保存</button></div>
+	
+	</form>
+
+</div>
+
+<script>
+
+//校验表单
+$('#editroleForm').validator({
+    fields: {
+        'rolename': 'required; length(1~30); '
+    },
+    valid: function(form){
+    	//触发提交后台操作
+    	saverole();
+    }
+}).on("click", "#saverole", function(e){
+    $(e.delegateTarget).trigger("validate");
+});
+
+
+function saverole(){
+	var url='${ctx}admin/saverole';
+	var name=$("#rolename").val();
+	var params={roleid:${roleid},name:name};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success){
+			$(this).dialog('close', 'roleedit');	//关闭dialog
+			altmsg("保存成功","保存成功",function(){
+			});
+			$("#pagerForm").submit();
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+</script>

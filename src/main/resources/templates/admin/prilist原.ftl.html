@@ -1,0 +1,35 @@
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th width="20%">权限名称</th>
+                <th>路径</th>
+                <th>层级</th>
+                <th width="5%">操作</th>
+                <th width="5%">删除</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list prilist as pri>
+            <tr class="pri_${pri.id}">
+                <td>${pri.priname!}</td>
+                <td>${pri.uri!}</td>
+                <td>${pri.level!}</td>
+                <td><button type="button" class="btn-green" onclick='editpri(this,${pri.id})'>编辑</button></td>
+                <td><button type="button" class="btn-red" onclick='delpri(this,${pri.id})'>删除</button></td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<script>
+function editpri(obj,priid){
+	$(obj).navtab({id:'editpri', url:'${ctx}admin/editpri.html?priid='+priid, title:'权限编辑'});
+}
+function delpri(obj,priid){
+	var url='${ctx}admin/delpri';
+	var params={priid:priid};
+	querydata(url,params);
+	$(".pri_"+priid).remove();
+}
+</script>

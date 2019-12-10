@@ -1,0 +1,374 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}sale/sendmaillist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+        	<button type="button" style="float:left;margin-right:20px;" class="btn-green" data-icon="sign-out" onclick='seltemplate(this)'>选择邮件模板</button>&nbsp;
+        	<input type="hidden" name="templatid" id="templatid">
+        	<label style="float:left;  line-height:25px;">当前模板名称：</label><input style="float:left;" type="text" name="templatename" id="templatename_send" readonly="readonly" size="20">
+        	<button type="button" style="float:left;margin-left:10px;margin-right:30px;" class="btn-green" data-icon="cloud-upload" onclick='batchSend()'>批量发送</button>
+            <label>账户类型:</label>
+            <select name="accounttype" data-toggle="selectpicker">
+                <option value="0">全部</option>
+                <option value="1">机构</option>
+                <option value="-1">个人</option>
+            </select>&nbsp;
+            <input type="text" name="loginid" value="${loginid!}" size="15" placeholder="用户名" >
+            <input type="text" name="phone" value="${phone!}" size="15" placeholder="手机号" >
+            <label>注册日期:</label><input type="text" name="startdate" value="${startdate!}" id="selectstartdate"  data-toggle="datepicker"  size="15" placeholder="起始">
+            <input type="text" name="enddate" id="selectenddate" value="${enddate!}"  data-toggle="datepicker" size="15"  placeholder="截止">
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent" id="guide-div">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+            	<th align="center"><input type="checkbox" name="checkbox" id="batchcheckbox_sale" data-toggle="icheck"></th>
+                <th align="center">用户编号</th>
+                <th align="center">账户类型</th>
+                <th align="center">用户名</th>
+                <th align="center">手机号</th>
+                <th align="center">IP所在地</th>
+                <th align="center">绑定邮箱</th>
+                <th align="center">注册日期</th>
+                <th align="center">最后在线终端</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as uinfo>
+            <tr align="center">
+            	<td align="center">
+	                <input type="checkbox" class="salecheckbox" data-toggle="icheck"  data-email="${(uinfo.email)!}" data-id="${(uinfo.id?c)!}" data-loginid="${(uinfo.loginid)!}" onclick="checkeventUser(this, '${(uinfo.email)!}', '${(uinfo.id?c)!}');"  value='${(uinfo.id?c)!}' name="checkbox"/>
+                </td>
+                <td>${uinfo["id"]!?c}</td>
+                
+                <#if (uinfo.orgid)?? && (uinfo.orgid)! &gt; 0>
+                	<td>机构</td>
+                <#elseif (uinfo.orgid)?? &&(uinfo.orgid)! &lt; 0>
+				  	<td>个人</td>
+				<#else>
+					<td>-</td>
+				</#if>
+                
+                <td>${uinfo["loginid"]!}</td>
+                <td>${uinfo["phone"]!}</td>
+                <td>${uinfo["province"]!""}
+                <#if (uinfo.province)?? && (uinfo.province) !="">,</#if>
+                ${uinfo["city"]!""}</td>
+                <td>${uinfo["email"]!}</td>
+                <td>${(uinfo["regist_time"]?string("yyyy-MM-dd"))!}</td>
+                <td>${uinfo["channel"]!}</td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+setChecked();
+
+//翻页后设置是否选中
+function setChecked(){
+
+   //1、初始化模板id及模板名称
+   $("#templatid").val(getCookieFunc("templatid"));
+   $("#templatename_send").val(getCookieFunc("templatename_send"));
+   
+   //2、初始化checkbox翻页选中状态
+   var $boxes = $("div#guide-div input[type=checkbox]");
+   for(var i=0;i<$boxes.length;i++){
+       var value = $boxes[i].value;
+       var checkedIds = getCookieFunc("ids")?getCookieFunc("ids").toString():"";
+       
+       if(checkedIds.indexOf(value,0) != -1){
+    	   $($boxes[i]).attr("checked", true);
+       }else{
+    	   $($boxes[i]).attr("checked", false);
+       }
+   } 
+   
+}
+
+function putCookieFunc(cookieKey,cookieValue){  
+    $.cookie(cookieKey,cookieValue);  
+};
+
+function getCookieFunc(cookieKey){  
+	return $.cookie(cookieKey);  
+};
+
+
+function seltemplate(obj){
+	$(obj).dialog({id:'seltemplate', width:935, height:450, url:'${ctx}sale/seltemplate.html?', title:'选择邮件模板'});
+}
+
+function refreshData(){
+	$("#pagerForm").submit();
+};
+
+setTimeout(function(){
+	
+	$('#batchcheckbox_sale').on('ifChecked', function(event){
+		$('.salecheckbox').iCheck('check');
+	});
+	
+	$('#batchcheckbox_sale').on('ifUnchecked', function(event){
+		$('.salecheckbox').iCheck('uncheck');
+	});
+	
+	$('.salecheckbox').on('ifChecked', function(event){
+		  var email =$(this).attr("data-email");
+		  var id= $(this).attr("data-id");
+		  
+		  if(email != ""){
+			 	putCookieFunc("ids",(getCookieFunc("ids")==null||getCookieFunc("ids")=="")?id:(getCookieFunc("ids")+","+id));
+				//alert(getCookieFunc("ids"));
+			}
+		}); 
+	 
+	 $('.salecheckbox').on('ifUnchecked', function(event){
+		 
+		 var id= $(this).attr("data-id");
+		 
+		 var cookievalue = getCookieFunc("ids")?getCookieFunc("ids").toString().split(","):"";
+			
+			var set = new Set();
+			for(i = 0; i < cookievalue.length; i++) {
+				
+				if(cookievalue[i] != id){
+					set.add(cookievalue[i]);
+				}
+			} 
+			putCookieFunc("ids", set.size() == 0 ? "" : set.show());
+			//alert(getCookieFunc("ids"));
+	 }); 
+	 
+},100);
+	
+	
+
+function batchSend(){
+	
+	$(".salecheckbox").each(function(){
+		if($(this).is(":checked")){
+			var email =$(this).attr("data-email");
+			
+			if(email == ""){
+				$(this).iCheck('uncheck');
+			}
+		}
+	});
+	
+	if(getCookieFunc("ids") != null && getCookieFunc("ids") != ""){
+		
+		if($("#templatid") && $("#templatid").val() != ""){
+			
+			//开启加载遮罩层
+			$.CurrentNavtab.find('form:eq(0)').trigger('bjui.ajaxStart')
+			//批量发送邮件
+			$.ajax({
+	            url: '${ctx}sale/batchSendMail',
+	            type: 'post',
+	            data: 'templatename='+$("#templatename_send").val()+'&userids='+getCookieFunc("ids"),
+	            dataType: 'json',
+	            success: function(data){
+	            	if(data.success){
+	            		//关闭加载遮罩层
+	            		$.CurrentNavtab.find('form:eq(0)').trigger('bjui.ajaxStop')
+	            		$("body").alertmsg('info', '批量发送邮件成功！',{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+	            		putCookieFunc("ids", null);
+	            		refreshData();
+	            	}else{
+	            		//关闭加载遮罩层
+	            		$.CurrentNavtab.find('form:eq(0)').trigger('bjui.ajaxStop')
+	            		$("body").alertmsg('error', '批量发送邮件失败，请联系管理员',{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'错误'})
+	            	}
+	            }
+	            
+	        });
+			
+			
+		}else{
+			$("body").alertmsg('warn', "请选择邮件模板！",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'警告'})
+		}
+		
+	}else{
+		
+		$("body").alertmsg('warn', "请至少选择一个绑定过邮箱的用户！",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'警告'})
+	}
+	
+	
+}
+
+
+/*js集合set类的实现*/
+function Set() {
+    this.dataStore = [];
+    this.add = add;//新增元素
+    this.remove = remove;//删除元素
+    this.size = size;//集合的元素个数
+    this.union = union;//求并集
+    this.contains = contains;//判断一个集合中是否包含某个元素
+    this.intersect = intersect;//交集
+    this.subset = subset;//判断一个集合是否是另一个的子集
+    this.difference = difference;//求补集
+    this.show = show;//将集合元素显示出来
+}
+
+function add(data) {
+    if (this.dataStore.indexOf(data) < 0) {
+        this.dataStore.push(data);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+function remove(data) {
+    var pos = this.dataStore.indexOf(data);
+    if (pos > -1) {
+        this.dataStore.splice(pos,1);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+function size() {
+    return this.dataStore.length;
+}
+
+function show() {
+	//return "[" + this.dataStore + "]";
+	return this.dataStore;
+}
+
+function contains(data) {
+    if (this.dataStore.indexOf(data) > -1) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+function union(set) {
+    var tempSet = new Set();
+    for (var i = 0; i < this.dataStore.length; ++i) {
+        tempSet.add(this.dataStore[i]);
+    }
+    for (var i = 0; i < set.dataStore.length; ++i) {
+        if (!tempSet.contains(set.dataStore[i])) {
+            tempSet.dataStore.push(set.dataStore[i]);
+        }
+    }
+    return tempSet;
+}
+
+function intersect(set) {
+    var tempSet = new Set();
+    for (var i = 0; i < this.dataStore.length; ++i) {
+        if (set.contains(this.dataStore[i])) {
+            tempSet.add(this.dataStore[i]);
+        }
+    }
+    return tempSet;
+}
+
+function subset(set) {
+    if (this.size() > set.size()) {
+        return false;
+    }
+    else {
+        for(var member in this.dataStore) {
+            if (!set.contains(member)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function difference(set) {
+    var tempSet = new Set();
+    for (var i = 0; i < this.dataStore.length; ++i) {
+        if (!set.contains(this.dataStore[i])) {
+            tempSet.add(this.dataStore[i]);
+        }
+    }
+    return tempSet;
+}
+
+
+//定义map    
+function Map() {
+    this.container = {};
+}
+//将key-value放入map中    
+Map.prototype.put = function(key, value) {
+    try {
+        if (key != null && key != "")
+            this.container[key] = value;
+    } catch (e) {
+        return e;
+    }
+};
+ 
+//根据key从map中取出对应的value    
+Map.prototype.get = function(key) {
+    try {
+        return this.container[key];
+    } catch (e) {
+        return e;
+    }
+};
+ 
+//删除map中指定的key    
+Map.prototype.remove = function(key) {
+    try {
+        delete this.container[key];
+    } catch (e) {
+        return e;
+    }
+};
+ 
+//获取map的大小    
+Map.prototype.size = function() {
+ 
+    return this.keySet().length;
+}
+ 
+//返回map中的key值数组    
+Map.prototype.keySet = function() {
+    var keys = new Array();
+    for ( var p in this.container) {
+        keys.push(p);
+    }
+ 
+    return keys;
+}
+ 
+//返回map中的values值数组    
+Map.prototype.values = function() {
+    var valuesArray = new Array();
+    var keys = this.keySet();
+    for (var i = 0; i < keys.length; i++) {
+        valuesArray.push(this.container[keys[i]]);
+    }
+    return valuesArray;
+}
+
+</script>

@@ -1,0 +1,98 @@
+<div class="bjui-pageContent">
+		<form class="cmxform" id="organForm" method="get" action="" autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+                
+                <#if organ.organid?? && organ.organid != -1>
+	                <tr>
+	                	<td><label for="j_organ_organid" class="control-label x120">机构ID：</label>
+	                		<input type="text"  name="organid"
+							value="${(organ.organid?c)!}" size="15" readonly="readonly"></td>
+	                </tr>
+                </#if>
+                
+                <tr>
+                	<td><label for="j_organ_organname" class="control-label x120">机构名称：</label>
+                		<input type="text"  name="organname" id="organname"
+						value="${(organ.organname)!}" size="15">&nbsp;<font color='red'>*</font></td>
+                </tr>
+                
+                <tr>
+                	<td><label for="j_organ_organname" class="control-label x120">创建人：</label>
+                		<input type="text"  name="relationer" id="relationer"
+						value="${(organ.relationer)!}" size="15">&nbsp;<font color='red'>*</font></td>
+                </tr>
+                
+			</tbody>
+			
+		</table>
+
+		<br/><br/>
+		
+		<div align="center"><button type="button" id="saveorgan" class="btn-default" data-icon="save">保存</button></div>
+
+</form>
+
+</div>
+
+<script>
+
+
+//校验表单
+$('#organForm').validator({
+	rules: {
+        //自定义一个规则，用来代替remote（注意：要把$.ajax()返回出来）
+        myRemote: function(element){
+            return $.ajax({
+                url: '${ctx}organ/isexistorganname',
+                type: 'post',
+                data: 'organname='+$("#organname").val()+'&organid=${(organ.organid?c)!}',
+                dataType: 'text',
+                success: function(d){
+                }
+            });
+        }
+    },
+    fields: {
+        'organname': 'required; myRemote;',
+        'relationer': 'required; length(1~30);',
+    },
+    valid: function(form){
+    	//触发提交后台操作
+    	saveorgan();
+    }
+}).on("click", "#saveorgan", function(e){
+    $(e.delegateTarget).trigger("validate");
+});
+
+
+ function saveorgan(){
+	
+	var organid='${(organid?c)!}';
+	var organname=$("#organname").val();
+	var relationer=$("#relationer").val();
+	
+	var url='${ctx}organ/saveorgan';
+	var params={organid:organid,organname:organname,relationer:relationer};
+	var callback=function(rtndata){
+		
+		var success=rtndata.success;
+		if(success){
+			altmsg("保存成功！","保存成功",function(){
+			});
+			
+			if(organid && organid == -1){
+				$(this).dialog('close', 'addorgan');	//关闭dialog
+			}else{
+				$(this).dialog('close', 'editorgan');	//关闭dialog
+			}
+			
+			$("#pagerForm").submit();
+		}
+	}
+	
+	querydata(url,params,callback); 
+
+}
+
+</script>

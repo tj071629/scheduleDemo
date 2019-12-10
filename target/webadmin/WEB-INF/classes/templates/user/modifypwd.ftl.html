@@ -1,0 +1,71 @@
+<div class="bjui-pageContent">
+	<form class="cmxform" id="reguserForm" method="get" action="" autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+				<tr>
+					<td><label class="control-label x120">新密码：</label>
+						<input type="password"  name="password" id="password"
+						value="123456" size="15" readonly="readonly"></td>
+				</tr>
+                <tr>
+					<td><label class="control-label x120">确认密码：</label>
+						<input type="password"  name="repassword" id="repassword"
+						value="123456" size="15" readonly="readonly"></td>
+				</tr>
+                
+			</tbody>
+			
+		</table>
+		
+		<input type="hidden" name="reguserid" value="${(reguserid)!}">
+		
+		<br /><br />
+		<div align="center"><button type="button" id="savepassword" class="btn-default" data-icon="save">保存</button></div>
+	
+	</form>
+
+</div>
+
+<script>
+
+//校验表单
+$('#reguserForm').validator({
+    fields: {
+        'password': 'required; password;',
+        'repassword': 'match(password);'
+    },
+    valid: function(form){
+    	//触发提交后台操作
+    	savepassword();
+    }
+}).on("click", "#savepassword", function(e){
+    $(e.delegateTarget).trigger("validate");
+});
+
+
+function savepassword(){
+	
+	var reguserid='${(reguserid)!?c}';
+	
+	var password=$("#password").val();
+	
+	var url='${ctx}user/savepwd';
+	var params={reguserid:reguserid,pwd:password};
+	var callback=function(rtndata){
+		
+		var success=rtndata.success;
+		if(success){
+			altmsg("保存成功！","保存成功",function(){
+			});
+		}else{
+			altmsg(rtndata.msg,"保存失败",function(){
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+	
+}
+
+
+</script>

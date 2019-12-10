@@ -1,0 +1,148 @@
+<style type="text/css">
+    div.chaochu{
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        -o-text-overflow: ellipsis;
+        white-space:nowrap;
+        width:350px;
+        height:24px;
+        display:block;
+    }
+</style>
+
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}schedule/schedulelist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+        	<button type="button" style="float:left;margin-right:30px;" class="btn-green" data-icon="plus" onclick='addjob(this)'>添 加</button>&nbsp;
+            <label>任务名称:</label>
+            <input type="text" style="width:150px;" name="jobname" value=""/>
+            <label>任务组别:</label>
+            <select data-toggle="selectpicker" name="jobgroup">
+                <option value="99">全部</option>
+                <option value="message">message</option>
+                <option value="notice">notice</option>
+                <option value="mail">mail</option>
+                <option value="SMS">SMS</option>
+            </select>&nbsp;
+            <label>任务内容:</label>
+            <input type="text" style="width:150px;" name="content" value="${content!}"/>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center">序号</th>
+                <th align="center">任务名称</th>
+                <th align="center">任务组别</th>
+                <th align="center">任务表达式</th>
+                <th align="center">任务实现类</th>
+                <th align="center">任务描述</th>
+                <th align="center">任务状态</th>
+                <th align="center">审核状态</th>
+                <th align="center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as job>
+            <tr align="center">
+            	<td>${job_index+1+((result.pageinfo.currpage-1)*result.pageinfo.rowinpage)}</td>
+                <td>${job.jobname!}</td>
+                <td>${job.jobgroup!}</td>
+                <td>${job.cronexpression!}</td>
+                <td>${job.quartzclass!}</td>
+                <td><div class="chaochu">${job.description!}</div></td>
+                
+                <td>
+                <#if (job.jobstatus)! == '0'>
+                 <font color="red">禁用</font>
+                <#elseif (job.jobstatus)! == '1'>
+				 <font color="green">启用</font>
+				</#if>
+                </td>
+                
+                <td>
+                <#if (job.auditstatus)! == '0'>
+                                                   已创建
+                <#elseif (job.auditstatus)! == '1'>
+				  审核通过
+				<#elseif (job.auditstatus)! == '2'>
+				  审核驳回
+				</#if>
+				</td>
+				
+                <td>
+               	<button type="button" class="btn-green" onclick='editjob(this, "${(job.jobid?c)!}", "${(job.jobstatus)!}")'>编辑</button>
+               	
+               	<#if (job.jobstatus == '0') >
+                	<button type="button" class="btn-blue" onclick='updatestatus(1,${(job.jobid)!})'>启用</button>
+			    <#else>  
+                	<button type="button" class="btn-red" onclick='updatestatus(0,${(job.jobid)!})'>禁用</button>
+			    </#if>
+				    
+				    
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+function addjob(obj){
+	$(obj).dialog({id:'addjobschedule', width:1166, height:785, url:'${ctx}schedule/editschedule.html?jobid=-1', title:'添加新任务'});
+}
+
+function editjob(obj,jobid,jobstatus){
+	if(jobstatus == "1"){
+		$("body").alertmsg('error', "编辑失败！当前任务已被启用，请先禁用",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+		return;
+	}
+	
+	$(obj).dialog({id:'editjobschedule', width:1166, height:785, url:'${ctx}schedule/editschedule.html?jobid='+jobid, title:'任务修改'});
+}
+
+function refreshData(){
+	$("#pagerForm").submit();
+};
+
+function updatestatus(jobstatus,jobid){
+	var posturl="${ctx}schedule/updatestatus";
+	var postdata={jobstatus:jobstatus,jobid:jobid};
+	
+	$("body").alertmsg('confirm', '确认'+(jobstatus==1?'启用':'禁用')+'吗?', {
+		okCall : function() {
+			
+			$.ajax({
+				type : "POST",
+				url : posturl,
+				data : postdata,
+				contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+				dataType : "json",
+				success : function(rtndata) {
+					if (rtndata.success == 1) {
+						$("body").alertmsg('ok', (jobstatus==1?'启用':'禁用') + "成功",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+						refreshData();
+					}else{
+						$("body").alertmsg('error', (jobstatus==1?'启用':'禁用') + "失败,请联系管理员",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+					}
+				}
+			}) 
+		}
+	})
+	
+};
+</script>

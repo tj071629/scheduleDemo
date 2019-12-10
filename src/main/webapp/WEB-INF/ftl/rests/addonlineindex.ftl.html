@@ -1,0 +1,83 @@
+<div class="bjui-pageContent">
+	<form action="#" method="get" id="j_addonlineindex_form" data-toggle="validate" data-alertmsg="false"> 
+		<p><label  class="control-label x85">新增上线指标</label></p>
+		<p>
+            <label class="control-label x85">指标名称：</label>
+            <select id="indexname" name="indexname"  onChange="indexgrpname()" style="width:150px;"> 
+            </select>
+		</p>
+		<p><label  class="control-label x85">二级目录：</label>
+			<input  name="indextype" id="indextype" data-rule="required" size="15" readonly="readonly">
+			<label  class=" x85"></label>
+		</p>
+		<p><label  class="control-label x85">上线时间：</label>
+			 <input type="text" name="datevalue" id="datevalue"   data-toggle="datepicker"  size="15">
+		</p>
+	</form> 
+			<button id="saveindex" onclick="saveOnlineIndex()"   class="btn-blue" data-icon="save">保 存</button>&nbsp;
+</div>
+<script>
+function indexgrpname(){
+	var posturl='${ctx}online/indexgrpname';
+	var indexid=$("#indexname").val();
+	var postdata={indexid:indexid};
+	$.ajax( {
+		url : posturl,
+		data : postdata,
+		type : "POST",
+		dataType : "json",
+		success : function(data){
+			$("#indextype").val(data.info);
+		}
+	});
+}
+indexnamelist();
+function indexnamelist(){
+	var posturl='${ctx}online/indexnamelist';
+	$.ajax( {
+		url : posturl,
+		type : "POST",
+		dataType : "json",
+		success : function(data){
+			var str = "";
+			jQuery.each(data.indexnamelist, function(i,item){  
+               str += "<option name ='indexname' value='"+item.id+"'>"+item.name+"</option>";
+            }); 
+			$("#indexname").append(str);
+			indexgrpname()
+		}
+	});
+}
+
+function saveOnlineIndex(){
+	var posturl="${ctx}online/saveOnlineIndex";
+	var indexname=$("#indexname").val();
+	var indextype=$("#indextype").val();
+	var datevalue=$("#datevalue").val();
+     var postdata={indexname:indexname,indextype:indextype,datevalue:datevalue};
+	 $.ajax({
+		type : "POST",
+		url : posturl,
+		data : postdata,
+		contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+		async:true,
+		dataType : "json",
+		beforeSend: function () {
+	        $("#saveindex").attr({ disabled: "disabled" });
+	    },
+		success : function(rtndata) {
+			var status = rtndata.status;
+			var returninfo = rtndata.returninfo;
+			if (status == 1) {
+				$("body").alertmsg('info', '保存成功！',{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+				$('#indexname').val('');
+			}else{
+				$("body").alertmsg('info', returninfo,{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+			}
+		},
+	 	complete: function () {
+	        $("#saveindex").removeAttr("disabled");
+	    }
+	});
+}
+</script>

@@ -1,0 +1,81 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}indic/payindiclist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+            <label>公开属性:</label>
+            <select data-toggle="selectpicker"  data-width="100" class="privated" name="privated">
+                <option value="-1">全部</option>
+                <option value="0">公开</option>
+                <option value="1">私有</option>
+            </select>&nbsp;
+            <label>收费:</label>
+            <select data-toggle="selectpicker" data-width="100"  class="feetype"  name="feetype">
+                <option value="-1">全部</option>
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </select>&nbsp;
+            
+             <label>付款状态:</label>
+            <select data-toggle="selectpicker" data-width="100"  class="paystatus"  name="paystatus">
+                <option value="-10">全部</option>
+                <option value="40">待付费</option>
+                <option value="45">已付费</option>
+            </select>&nbsp;
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th>指标编号</th>
+                <th>发起日期</th>
+                <th>指标名称</th>
+                <th>发起人</th>
+                <th>付款状态</th>
+                <th>开发金额(馒头币)</th>
+                <th>使用金额(馒头币)</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as indicinfo>
+        		<tr>
+	                <td>${indicinfo["id"]}</td>
+	                <td>${indicinfo["pubtime"]!}</td>
+	                <td>${indicinfo["title"]}</td>
+	                <td>${indicinfo["nickname"]!}</td>
+	                <td>${indicinfo["paystatus"]!}</td>
+	                <td>${indicinfo["devfee"]!}</td>
+	                <td>${indicinfo["fee"]!}</td>
+	            </tr>
+            </#list>
+        	
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+setTimeout(function(){
+	$(".privated").selectpicker('val', '${privated!}');
+	$(".feetype").selectpicker('val', '${feetype!}');
+	$(".paystatus").selectpicker('val', '${paystatus!}');
+},200);
+function openindexdetail(obj,indicid){
+	$(obj).navtab({id:'indicdetail', url:'${ctx}indic/detail.html?indicid='+indicid, title:'指标详情'});
+}
+
+function editindexdetail(obj,indicid){
+	$(obj).navtab({id:'indiceditdetail', url:'${ctx}indic/edit.html?indicid='+indicid, title:'指标审核'});
+}
+</script>

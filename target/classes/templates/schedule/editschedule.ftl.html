@@ -1,0 +1,324 @@
+
+<div class="bjui-pageContent">
+	<form class="cmxform" id="scheduleForm" method="get" action=""
+		autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+				<tr>
+					<td><label for="" class="control-label x120">任务组别：</label></td>
+					<td><input type="radio" name="jobgroup" id="j_jobgroup0"
+						data-toggle="icheck" value=0
+						<#if job.jobgroup?? && job.jobgroup == 'message'> checked </#if>
+						data-label="消息" checked=checked> 	
+						
+						<input type="radio"<#if job.jobgroup?? && job.jobgroup=='notice'> checked </#if>
+						name="jobgroup" id="j_jobgroup1" data-toggle="icheck" value=1 data-label="通知"> 
+						
+						<input type="radio"<#if job.jobgroup?? && job.jobgroup=='mail'> checked </#if>
+						name="jobgroup" id="j_jobgroup2" data-toggle="icheck"
+						value=2 data-label="邮件"> 
+						
+						<input type="radio"<#if job.jobgroup?? && job.jobgroup=='sms'> checked </#if>
+						name="jobgroup" id="j_jobgroup3" data-toggle="icheck"
+						value=3 data-label="短信"> &nbsp;<font color='red'>* </td>
+				</tr>
+				
+				<tr>
+					<td><label for="j_job_code" class="control-label x120">任务名称：</label></td>
+					<td><input type="text" name="jobname" id="jobname_es"
+						value="${(job.jobname)!}" size="45" data-rule="required;length[4~20];" readonly>&nbsp;<font color='red'>*</font>
+						<button id="templateFlag" type="button" style="margin-left:284px;" class="btn-green" data-icon="sign-out" onclick='seltemplate(this)'>选择任务模板</button>
+						</td>
+				</tr>
+				
+				<tr>
+					<td><label for="j_schedule_accountvalid"
+						class="control-label x120">触发时间：</label></td>
+					<td><input type="text" name="triggertime" id="triggertime"
+						value="${(job.triggertime)!}"  size="45" data-toggle="datepicker" data-pattern="MM-dd HH:mm:ss" onblur="blurEvent(this);">&nbsp;<font color='red'>*</font><font color='orange'>（精确至秒）</font></td>
+				</tr>
+
+				<tr>
+					<td><label for="j_organ_accountvalid"
+						class="control-label x120">触发频次：</label></td>
+					<td><font color='orange'>（每隔：</font>
+					<input type="text" name="perunit" id="perunit" value="${(job.perunit)!}" size="20" data-rule="length(1~6);integer(+)" placeholder="多少单位">
+					<select class="selector" name="triggerfrequency" data-toggle="selectpicker" data-width="194" id="triggerfrequency" onchange="changeEvent(this);">
+							<option value="">按触发时间执行</option>
+							<option value="second">秒</option>
+							<option value="minute">分钟</option>
+							<option value="hour">小时</option>
+					</select>
+					<font color='orange'>&nbsp;触发一次）</font></td>
+				</tr>
+
+				<tr>
+					<td><label for="j_organ_code" class="control-label x120">任务实现类：</label></td>
+					<td><input type="text" name="quartzclass" id="quartzclass"
+						value="<#if job.quartzclass?? && job.quartzclass!=''>${(job.quartzclass)!}<#else>com.eb.admin.task.FestivalGreetJobFactory</#if>" size="45" data-rule="required;length[4~120];" readonly>&nbsp;<font color='red'>*</font>
+						<input type="radio" name="quartzclass" id="s_jobgroup0"
+						data-toggle="icheck" value=0 data-label="节日问候类" checked=checked> 	
+						<input type="radio" name="quartzclass" id="s_jobgroup1" data-toggle="icheck" value=1 data-label="其他">
+						<button id="templateFlag" type="button" style="margin-left:150px;" class="btn-green" data-icon="sign-out" onclick='seluser(this)'>选择接收用户</button>
+						</td>
+				</tr>
+				
+				<tr>
+					<td><label for="" class="control-label x120">任务状态：</label></td>
+					<td><input type="radio" <#if job.jobstatus?? && job.jobstatus=='1'>checked</#if>
+						name="jobstatus" id="j_schedule_jobstatus1" data-toggle="icheck"
+						value="true" data-label="启用" checked=checked> 
+						
+						<input type="radio" name="jobstatus"
+						id="j_schedule_jobstatus0" data-toggle="icheck" value="false"
+						<#if job.jobstatus?? && job.jobstatus=='0'>checked</#if>
+						data-label="禁用">&nbsp;<font color='red'>*
+					</td>
+				</tr>
+				
+				<tr>
+					<td><label for="j_organ_codevalid" class="control-label x120">任务描述：</label></td>
+					<td><textarea name="description" id="schedule_kind_desc" style="width:870px; height:465px"
+							data-toggle="kindeditor" data-rule="任务描述:length[4~250];">${(job.description)!}</textarea>&nbsp;<font
+						color='red'>*</font></td>
+				</tr>
+				
+
+			</tbody>
+
+		</table>
+
+		<input type="hidden" id="jobid_es" value="${(jobid?c)!}">
+		
+		<input type="hidden" id="jobgroup_es" value="${(job.jobgroup)!}">
+
+		<div align="center">
+			<button type="button" id="saveschedule" class="btn-default"
+				data-icon="save">保存</button>
+		</div>
+
+	</form>
+
+</div>
+
+<script>
+
+
+$(document).ready(function(){
+	
+	 $("#triggerfrequency").val('${(job.triggerfrequency)!}');
+	 
+	 $("input:radio[name='jobgroup']").on('ifChanged', function(){
+		 $("#jobname_es").val("");
+		 putCookieFunc("uinfoids"+$("#jobname_es").val(),"");
+	 });
+	 
+	 $("input:radio[name='jobgroup']").on('ifChecked', function(){
+		
+		if(getorijobgroup() != getjobgroup()){
+			putCookieFunc("uinfoids"+$("#jobname_es").val(),"");
+		}
+		
+		var v = $(this).val();
+        $("#templateFlag").attr("value",v);
+        
+	 });
+	 
+	 $("input:radio[name='quartzclass']").on('ifChecked', function(){
+		var v = $(this).val();
+        if(v == 0){
+        	$("#quartzclass").val("com.eb.admin.task.FestivalGreetJobFactory");
+        	$("#quartzclass").attr("readonly",true);
+        }else if(v == 1){
+        	$("#quartzclass").val("");
+        	$("#quartzclass").attr("readonly",false);
+        }
+	 });
+	 
+});
+
+function putCookieFunc(cookieKey,cookieValue){  
+    $.cookie(cookieKey,cookieValue);  
+};
+
+function getCookieFunc(cookieKey){  
+	return $.cookie(cookieKey);  
+};
+
+function blurEvent(val){
+	if(val.value!=""){
+		$('#perunit').val("");
+		$("#triggerfrequency").val("");
+		$('#perunit').attr("disabled","disabled");
+		$('#triggerfrequency').attr("disabled","disabled");
+	}else{
+		$('#perunit').attr("disabled",false);
+		$('#triggerfrequency').attr("disabled",false);
+	}
+}
+
+function changeEvent(val){
+	if(val.value!=""){
+		$('#triggertime').val("");
+		$('#triggertime').attr("disabled","disabled");
+		$('#perunit').attr("disabled",false);
+		$('#triggerfrequency').attr("disabled",false);
+	}else{
+		$('#triggertime').attr("disabled",false);
+		$('#perunit').val("");
+		$('#perunit').attr("disabled","disabled");
+		$('#triggerfrequency').attr("disabled","disabled");
+	}
+}
+
+//校验表单
+$('#scheduleForm').validator({
+	rules: {
+        //自定义一个规则，用来代替remote（注意：要把$.ajax()返回出来）
+        validatejobname: function(element){
+            return $.ajax({
+                url: '${ctx}schedule/isexistjobname',
+                type: 'post',
+                data: 'jobname='+$("#jobname_es").val()+'&jobid='+($("#jobid_es")?$("#jobid_es").val():null),
+                dataType: 'text',
+                success: function(d){
+                }
+            });
+        }
+    },
+    fields: {
+        'jobname': 'required; validatejobname; length[1~30];',
+        'quartzclass': 'required;',
+        'description': 'length[4~250];'
+    },
+    valid: function(form){
+    	//触发提交后台操作
+    	saveschedule();
+    }
+}).on("click", "#saveschedule", function(e){
+    $(e.delegateTarget).trigger("validate");
+});
+
+
+
+ function saveschedule(){
+	 
+	var jobid='${(jobid?c)!}';
+	var jobname=$("#jobname_es").val();
+	
+	var isorguser = getCookieFunc("senduser_org"+jobname);
+	var isperuser = getCookieFunc("senduser_per"+jobname);
+	
+	var jobgroup = "message";
+	if($("#j_jobgroup1").is(":checked")){
+		jobgroup = "notice";
+	}else if($("#j_jobgroup2").is(":checked")){
+		jobgroup = "mail";
+	}else if($("#j_jobgroup3").is(":checked")){
+		jobgroup = "sms";
+	}
+	
+	var triggertime=$("#triggertime").val();
+	var perunit=$("#perunit").val();
+	var triggerfrequency=$("#triggerfrequency").val();
+	var quartzclass=$("#quartzclass").val();
+	var desc=$("#schedule_kind_desc").val();
+	
+	var jobstatus = 0;
+	if($("#j_schedule_jobstatus1").is(":checked")){
+		jobstatus = 1;
+	}
+	
+	if(triggertime == "" && (perunit == "" || triggerfrequency == "")){
+		$("body").alertmsg('warn', "请输入触发时间或频次！",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'警告'})
+		return;
+	}
+	
+	var receiver = getCookieFunc("uinfoids"+$("#jobname_es").val());
+	if(receiver == null || receiver == ""){
+		$("body").alertmsg('warn', "请至少勾选一个待发送用户！",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'警告'})
+		return;
+	}
+	
+	var url='${ctx}schedule/saveschedule';
+	var params={jobid:jobid,jobname:jobname,jobgroup:jobgroup,triggertime:triggertime,perunit:perunit,triggerfrequency:triggerfrequency,quartzclass:quartzclass,jobstatus:jobstatus,desc:desc,isorguser:isorguser,isperuser:isperuser,receiver:receiver};
+	var callback=function(rtndata){
+		
+		var success=rtndata.success;
+		
+		if(success){
+			altmsg("保存成功！","保存成功",function(){
+			});
+		}
+		
+		if(jobid && jobid == -1){
+			$(this).dialog('close', 'addjobschedule');	//关闭dialog
+		}else{
+			$(this).dialog('close', 'editjobschedule');	//关闭dialog
+		}
+		
+		$("#pagerForm").submit();
+		
+	}
+	querydata(url,params,callback); 
+
+}
+
+ function val2name(val){
+	 var str = "";
+	 if(val == 0){
+		 str = "消息";
+	 }else if(val == 1){
+		 str = "通知";
+	 }else if(val == 2){
+		 str = "邮件";
+	 }else{
+		 str = "短信";
+	 }
+	 return str;
+ }
+ 
+ function seltemplate(obj){
+	 $(obj).dialog({id:'selnoticetemplate', width:1024, height:750, url:'${ctx}schedule/selnoticetemplate.html?type='+getjobgroup(), title:'选择模板'});
+ }
+ 
+ function getorijobgroup(){
+	 var ori_jobgroup = $("#jobgroup_es").val();
+	 if(ori_jobgroup == "message"){
+		 ori_jobgroup = 0;
+	 }else if(ori_jobgroup == "notice"){
+		 ori_jobgroup = 1;
+	 }else if(ori_jobgroup == "mail"){
+		 ori_jobgroup = 2;
+	 }else{
+		 ori_jobgroup = 3;
+	 }
+	 return ori_jobgroup;
+ }
+ 
+ function getjobgroup(){
+	 var jobgroup=0;
+	 if($("#j_jobgroup0").is(":checked")){
+		 jobgroup=0;
+	 }else if($("#j_jobgroup1").is(":checked")){
+		 jobgroup=1;
+	 }else if($("#j_jobgroup2").is(":checked")){
+		 jobgroup=2;
+	 }else{
+		 jobgroup=3;
+	 }
+	 return jobgroup;
+ }
+ 
+ function seluser(obj){
+	 
+	var jobname = $("#jobname_es").val();
+	if(jobname != ""){
+		//alert($("#jobname_es").val());
+ 		$(obj).dialog({id:'selscheduleuser', width:1024, height:750, url:'${ctx}schedule/selscheduleuser.html?jobname='+$("#jobname_es").val(), title:'选择用户'});
+	}else{
+		$("body").alertmsg('info', "请先输入任务名称",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+ 	}
+ }
+ 
+</script>

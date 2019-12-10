@@ -1,0 +1,119 @@
+<div class="bjui-pageContent">
+		<p><label  class="control-label x85">指标基本信息</label></p>
+		<p><label  class="control-label x85">指标编号：</label>
+			<label  class=" x85">${indicInfo["id"]}</label>
+			<label  class="control-label x85">发起时间：</label>
+			<label  class=" x185">${indicInfo["pubtime"]}</label>
+		</p>
+		<p><label  class="control-label x85">发起人：</label>
+			<label  class=" x85">${indicInfo.nickname!}</label>
+			<label  class="control-label x85">指标属性：</label>
+			<label  class=" x185">${indicInfo["indicdesc"]}</label>
+		</p>
+		<p><label  class="control-label x85">指标名称：</label>
+			<label  class=" x85">${indicInfo["title"]!}</label>
+		</p>
+		<p><label  class="control-label x85">指标描述：</label>
+		<div class="content">
+			${indicInfo["content"]!}
+		</div>
+		</p>
+		<p>
+		<label  class="control-label x85">备注信息：</label>
+		<span>${indicInfo["desctext"]!}</span>
+		</p>
+		
+		<#if indicInfo["devuserid"] gt 0 >
+		
+		<p><label  class="control-label x85">开发信息</label>
+		</p>
+		<p>
+		<label  class="control-label x85">负责人：</label>
+		<label  class=" x85">${indicInfo.adminname!}</label>
+		</p>
+		
+		<p>
+		<label  class="control-label x85">开始日期：</label>
+		<label  class=" x85">${(indicInfo.startdevtime?string("yyyy-MM-dd"))!}</label>
+				<label  class="control-label x85">预计结束：</label>
+		<label  class=" x85">${(indicInfo.expectenddevtime?string("yyyy-MM-dd"))!}</label>
+		
+		</p>
+		<p>
+		<label  class="control-label x85">开发备注：</label>
+		<span>${indicInfo["devdesctext"]!}</span>
+		</p>
+		
+		</#if>
+		
+		<#if indicInfo["devuserid"] lt 0 >
+		
+		<p><label  class="control-label x85">开发信息</label>
+		</p>
+		<p>
+		<label  class="control-label x85">开始日期：</label>
+		<label  class=" x85"><input id="startdevdate" type="text" id="startdate" data-toggle="datepicker" /></label>
+		</p>
+		<p>
+		<label  class="control-label x85">预计结束：</label>
+		<label  class=" x85"><input id="enddevdate" type="text" id="enddate" data-toggle="datepicker" /></label>
+		</p>
+		<p>
+		<p>
+		<label  class="control-label x85">开发备注：</label>
+		</p>
+		<textarea id="devdesctext" rows="3" cols="80">
+		</textarea>
+		</p>
+		</#if>
+</div>
+<#if indicInfo.nodestatus!=56>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="botton" class="btn-default" onclick="startdev()">保存信息</button></li>
+        <#if indicInfo["devuserid"] gt 0 >
+        <li><button type="botton" class="btn-default" onclick="findev()">标记完成</button></li>
+        </#if>
+    </ul>
+</div>
+</#if>
+<style>
+.content{
+	margin-left:20px;
+	border:1px solid #eee;
+	padding:5px;
+	min-height:60px;
+}
+</style>
+<script>
+function startdev(){
+	var startdate=$("#startdevdate").val();
+	var enddate=$("#enddevdate").val();
+	var desctext=$("#devdesctext").val();
+	var url='${ctx}indic/approval/startdev';
+	var params={indicid:${indicid},desc:desctext,startdate:startdate,enddate:enddate};
+	var callback=function(rtndata){
+		var sucess=rtndata.sucess;
+		if(sucess){
+			altmsg("保存成功","保存成功",function(){
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+
+function findev(){
+	var url='${ctx}indic/approval/findev';
+	var params={indicid:${indicid}};
+	var callback=function(rtndata){
+		var sucess=rtndata.sucess;
+		if(sucess){
+			altmsg("保存成功","保存成功",function(){
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+</script>

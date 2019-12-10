@@ -1,0 +1,29 @@
+<label>板块:</label>
+<select data-toggle="selectpicker" id="forumblkselector">
+	<#list blklist as blk>
+   		<option value="${blk.id}">${blk.name}</option>
+    </#list>
+</select>&nbsp;
+<button type="button" onclick="moveblk(${topicid})" class="btn-close" >确定</button>
+
+<script>
+function moveblk(topicid){
+	var blkid=$("#forumblkselector").selectpicker('val');
+	if(topicid<0){
+		batmove(blkid);
+		return;
+	}
+	var url='${ctx}forum/move';
+	var params={topicid:topicid,blkid:blkid};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success){
+			altmsg("保存成功","保存成功",function(){
+				dorefreshforum();
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+</script>

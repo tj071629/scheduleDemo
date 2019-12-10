@@ -1,0 +1,126 @@
+		
+		<!-- jqgrid插件CSS样式 -->
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/ui.jqgrid.css" />
+		
+		<!-- bootstrap框架基础CSS及字体 -->
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/font-awesome.min.css" />
+	
+		<!-- ace主题基础样式及字体 -->
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/ace.min.css" />
+		
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/ace-rtl.min.css" />
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/ace-skins.min.css" />
+		
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/bootstrap.min.js"></script>
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/bootbox.min.js"></script>
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/typeahead-bs2.min.js"></script>
+		
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/jquery.jqGrid.min.js"></script>
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/i18n/grid.locale-cn.js"></script>
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/rolepri.js"></script>
+		
+		
+		<!-- <#list prilist as pri>
+            <tr class="pri_${pri.id!}">
+                <td>${pri.id!}</td>
+                <td>${pri.priname!}</td>
+                <td>${pri.level!}</td>
+                <td>${pri.uri!}</td>
+                <td>
+                <input class="pricheck" type="checkbox"  data-toggle="icheck" data-priid="${pri.id}"
+                <#if pri.checked>
+                	checked
+                </#if>
+                >
+                </td>
+            </tr>
+            </#list> -->
+        <div class="page-content">
+        
+			<table id="grid-table-rolepri"></table>
+			<div id="grid-pager-rolepri"></div>
+            
+		</div>
+		
+		<div id="rolepri-input" class="modal"></div>
+		
+		<script type="text/javascript">
+		
+		
+		//定义map    
+		function Map() {
+		    this.container = {};
+		}
+		//将key-value放入map中    
+		Map.prototype.put = function(key, value) {
+		    try {
+		        if (key != null && key != "")
+		            this.container[key] = value;
+		    } catch (e) {
+		        return e;
+		    }
+		};
+		 
+		//根据key从map中取出对应的value    
+		Map.prototype.get = function(key) {
+		    try {
+		        return this.container[key];
+		    } catch (e) {
+		        return e;
+		    }
+		};
+		 
+		//删除map中指定的key    
+		Map.prototype.remove = function(key) {
+		    try {
+		        delete this.container[key];
+		    } catch (e) {
+		        return e;
+		    }
+		};
+		 
+		//获取map的大小    
+		Map.prototype.size = function() {
+		 
+		    return this.keySet().length;
+		}
+		 
+		//返回map中的key值数组    
+		Map.prototype.keySet = function() {
+		    var keys = new Array();
+		    for ( var p in this.container) {
+		        keys.push(p);
+		    }
+		 
+		    return keys;
+		}
+		 
+		//返回map中的values值数组    
+		Map.prototype.values = function() {
+		    var valuesArray = new Array();
+		    var keys = this.keySet();
+		    for (var i = 0; i < keys.length; i++) {
+		        valuesArray.push(this.container[keys[i]]);
+		    }
+		    return valuesArray;
+		}
+		
+		
+		
+		jQuery(function($){
+			
+			var rolepriMap = new Map();
+			<#list prilist as pri>
+            	rolepriMap.put("${pri.id!}","${pri.checked?string('true','flase')}");
+            </#list>
+            
+            rolepriMap.put("roleid","${roleid}");
+            
+		    Rolepri.loadPage(rolepriMap);
+			
+		});
+			
+		
+		
+		</script>
+

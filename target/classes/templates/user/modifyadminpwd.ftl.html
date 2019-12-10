@@ -1,0 +1,91 @@
+<div class="bjui-pageContent">
+	<form class="cmxform" id="pwdForm" method="get" action="" autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+				<tr>
+					<td><label class="control-label x120">原密码：</label>
+						<input type="password"  name="pwd" id="over_pwd"
+						value="" size="15"></td>
+				</tr>
+				<tr>
+					<td><label class="control-label x120">新密码：</label>
+						<input type="password"  name="npwd" id="npwd"
+						value="" size="15"></td>
+				</tr>
+                <tr>
+					<td><label class="control-label x120">确认密码：</label>
+						<input type="password"  name="rnpwd" id="rnpwd"
+						value="" size="15"></td>
+				</tr>
+                
+			</tbody>
+			
+		</table>
+		
+		<br /><br /><br />
+		<div align="center"><button type="button" id="saveadminpassword" class="btn-default" data-icon="save">保存</button></div>
+	
+	</form>
+
+</div>
+
+<script>
+
+//校验表单
+$('#pwdForm').validator({
+	rules: {
+		//自定义一个规则，用来代替remote（注意：要把$.ajax()返回出来）
+        check: function(element){
+            return $.ajax({
+                url: '${ctx}login/isexistoripwd',
+                type: 'post',
+                data: 'pwd='+$("#over_pwd").val(),
+                dataType: 'text',
+                success: function(d){
+                }
+            });
+        }
+    },
+    fields: {
+    	'pwd': '原密码:required; password; check;',
+        'npwd': '新密码:required; password;',
+        'rnpwd': '确认密码:required; match(npwd);'
+    },
+    valid: function(form){
+    	//触发提交后台操作
+    	saveadminpassword();
+    }
+}).on("click", "#saveadminpassword", function(e){
+    $(e.delegateTarget).trigger("validate");
+});
+
+
+function saveadminpassword(){
+	
+	var pwd=$("#over_pwd").val();
+	var npwd=$("#npwd").val();
+	
+	var url='${ctx}login/modifyadminpwd';
+	var params={pwd:pwd,npwd:npwd};
+	var callback=function(rtndata){
+		
+		var success=rtndata.success;
+		if(success){
+			altmsg("保存成功！","保存成功",function(){
+			});
+			
+			$(this).dialog('close', 'changepwd_page');	//关闭dialog
+			
+		}else{
+			altmsg(rtndata.msg,"保存失败",function(){
+				$("#pwd").focus();
+			});
+		}
+		
+	}
+	querydata(url,params,callback);
+	
+}
+
+
+</script>

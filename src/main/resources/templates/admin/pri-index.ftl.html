@@ -1,0 +1,62 @@
+<style>
+.page-content .ui-jqgrid-title {
+    font-size: initial;
+}
+</style>		
+		<!-- jqgrid插件CSS样式 -->
+		<!-- <link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/jquery-ui-1.10.3.full.min.css" />
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/datepicker.css" /> -->
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/ui.jqgrid.css" />
+		
+		<!-- bootstrap框架基础CSS及字体 -->
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/font-awesome.min.css" />
+	
+		<!-- ace主题基础样式及字体 -->
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/ace.min.css" />
+		
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/ace-rtl.min.css" />
+		<link rel="stylesheet" type="text/css" href="${ctx}BJUI/plugins/jqGrid/css/ace-skins.min.css" />
+		
+		<!-- <link rel="stylesheet" href="${ctx}BJUI/plugins/jqGrid/css/ace-fonts.css" /> -->
+		
+		<!--[if !IE]> -->
+		<!-- <script type="text/javascript">
+			window.jQuery || document.write("<script src='${ctx}BJUI/plugins/jqGrid/jquery-2.0.3.min.js'>"+"<"+"/script>");
+		</script> -->
+		
+		
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/bootstrap.min.js"></script>
+		<!-- <script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/bootbox.min.js"></script>
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/typeahead-bs2.min.js"></script> -->
+		
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/jquery.jqGrid.min.js"></script>
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/i18n/grid.locale-cn.js"></script>
+		
+		<script type="text/javascript" src="${ctx}BJUI/plugins/jqGrid/pri.js"></script>
+		
+				
+		<!-- PAGE CONTENT BEGINS -->
+		<div class="bjui-searchBar">
+			<button id="newpri" data-icon="plus" class="btn btn-green" type="button">添加</button>
+			<button id="editpri" data-icon="edit" class="btn btn-green" type="button">编辑</button>
+			<button id="deletepri" data-icon="trash" class="btn btn-danger" type="button">删除</button>
+		</div>
+
+		<div class="page-content">
+			<table id="grid-table-pri"></table>
+			<div id="grid-pager-pri"></div>
+		</div>
+		<!-- inline scripts related to this page -->
+		
+		<div id="pri-input" class="modal"></div>
+		
+		<script type="text/javascript">
+		
+		jQuery(function($){
+			
+			Pri.loadPage();
+			
+		});
+			
+		</script>
+

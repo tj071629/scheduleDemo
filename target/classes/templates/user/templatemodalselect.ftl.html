@@ -1,0 +1,77 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}user/seltemplatetrade.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+        	<button type="button" style="float:left;margin-right:30px;" class="btn-green" data-icon="check" onclick='selectevent()'>选择模板并发送</button>&nbsp;
+            <label>模板名称:</label>
+            <input type="text" style="width:150px;" name="templatename" value="${templatename!}"/>
+            <label>模板内容:</label>
+            <input type="text" style="width:150px;" name="content" value="${content!}"/>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent" id="t_tradediv">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center" width="5%"></th>
+                <th align="center">模板名称</th>
+                <th align="center">模板内容</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as message>
+            <tr align="center">
+            	<td><input type="checkbox" value="${(message.templatename)!}" name="checkbox"/></td>
+                <td>${message.templatename!}</td>
+                
+                <td align="left">${(message.content)!}</td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+function selectevent(){
+	
+	if($("#t_tradediv").find("input[type=checkbox]:checked").length == 0){
+		
+		$("body").alertmsg('info', "请先选择一个邮件模板！",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+		
+	}else if($("#t_tradediv").find("input[type=checkbox]:checked").length == 1){
+		//确定以当前消息模板 发送消息
+		$.ajax({
+			type : "POST",
+			url : "${ctx}user/sendmsg",
+			data : {userid:'${(userid?c)!}',templatename:$("div#t_tradediv input[type=checkbox]:checked").val()},
+			contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+			dataType : "json",
+			success : function(rtndata) {
+				if (rtndata.success == 1) {
+					$("body").alertmsg('info', "发送成功",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+					$(this).dialog('close', 'tradeuser_template');	//关闭dialog
+				}else{
+					$("body").alertmsg('info', "发送失败,请联系管理员",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+				}
+			}
+		}) 
+		
+	}else{
+		$("body").alertmsg('warn', "只能选择一个邮件模板！",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'警告'})
+	}
+	
+}
+ 
+</script>

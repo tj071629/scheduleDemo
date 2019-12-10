@@ -1,0 +1,74 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}indic/freeindiclist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+            <label>投票状态:</label>
+            <select data-toggle="selectpicker" class="voteday" name="voteday">
+                <option value="-1">全部</option>
+                <option value="1">第一期</option>
+                <option value="2">第二期</option>
+                <option value="3">第三期</option>
+                <option value="4">休眠</option>
+            </select>&nbsp;
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th>指标编号</th>
+                <th>发起日期</th>
+                <th>指标名称</th>
+                <th>发起人</th>
+                <th>投票状态</th>
+                <th>投票数</th>
+                <th>名次</th>
+                <th>浏览量</th>
+                <th>关注量</th>
+                <th>评论数</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as indicinfo>
+        		<tr>
+	                <td>${indicinfo["id"]}</td>
+	                <td>${indicinfo["pubtime"]!}</td>
+	                <td>${indicinfo["title"]}</td>
+	                <td>${indicinfo["nickname"]!}</td>
+	                <td>${indicinfo["votestatus"]!}</td>
+	                <td>${indicinfo["votednum"]!}</td>
+	                <td>${indicinfo["sortvalue"]!}</td>
+	                <td>${indicinfo["vnum"]!}</td>
+	                <td>${indicinfo["interestnum"]!}</td>
+	                <td>${indicinfo["commentnum"]!}</td>
+	            </tr>
+            </#list>
+        	
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+setTimeout(function(){
+	$(".voteday").selectpicker('val', '${voteday!}');
+},200);
+function openindexdetail(obj,indicid){
+	$(obj).navtab({id:'indicdetail', url:'${ctx}indic/detail.html?indicid='+indicid, title:'指标详情'});
+}
+
+function editindexdetail(obj,indicid){
+	$(obj).navtab({id:'indiceditdetail', url:'${ctx}indic/edit.html?indicid='+indicid, title:'指标审核'});
+}
+</script>

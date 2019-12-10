@@ -1,0 +1,59 @@
+<div class="bjui-pageContent">
+	<form class="cmxform" id="organcodeForm" method="get" action="" autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+               <tr>
+               	<td><label for="j_organ_accountvalid" class="control-label x120">关联机构：</label>
+               		<span><select id="relationorgan_switch" name="relationorgan"  style="width:150px;height:25px;" /></span>&nbsp;<font color='red'>*</font>
+               	</td>
+               </tr>
+		</table>
+		<br /><br />
+		<div align="center"><button type="button" id="saveaccountcode" class="btn-default" data-icon="save" onclick="transform(${(reguserid?c)!})">保存</button></div>
+	</form>
+</div>
+
+<script>
+relationorganlist();
+function relationorganlist(){
+	var posturl='${ctx}organcode/relationorganlist';
+	$.ajax( {
+		url : posturl,
+		type : "POST",
+		dataType : "json",
+		success : function(data){
+			var str = "";
+			jQuery.each(data.indexnamelist, function(i,item){  
+			   if('${(organid?c)!}' == item.organid){
+				   str += "<option name ='relationorgan' value='"+item.organid+"' selected='selected'>"+item.organname+"</option>";
+			   }else{
+				   str += "<option name ='relationorgan' value='"+item.organid+"'>"+item.organname+"</option>";
+			   }
+               
+            }); 
+			$("#relationorgan_switch").append(str);
+		}
+	});
+}
+function transform(userid){
+	var posturl="${ctx}user/transform";
+	var relationorganid=$("#relationorgan_switch").val();
+	var postdata={userid:userid,orgid:relationorganid};
+	if (confirm("确认转换为正式账号吗?")) {
+		$.ajax({
+			type : "POST",
+			url : posturl,
+			data : postdata,
+			contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+			dataType : "json",
+			success : function(rtndata) {
+				if (rtndata.success == 1) {
+					$("body").alertmsg('ok', "转换成功",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+					refreshData();
+				}else{
+					$("body").alertmsg('error', "转换失败,请联系管理员",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+				}
+			}
+		}) 
+	}
+};
+</script>

@@ -1,0 +1,100 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}organ/bindcountlist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+        	<label>注册码:</label>
+            <input type="text" style="width:110px;" name="code" value="${code!}"/>
+            <label>账号类型:</label>
+            <select data-toggle="selectpicker" name="accounttype">
+                <option value="99">全部</option>
+                <option value="0">注册账户</option>
+                <option value="1">试用账户</option>
+            </select>&nbsp;
+            <label>状态:</label>
+            <select data-toggle="selectpicker" name="status">
+                <option value="99">全部</option>
+                <option value="0">正常</option>
+                <option value="1">已使用</option>
+            </select>&nbsp;
+            <label>创建时间:</label><input type="text" name="createdate" value="${createdate!}" id="selectcreatedate"  data-toggle="datepicker"  size="13">
+            <input type="hidden" name="organid" value="${(organid?c)!}">
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center">序号</th>
+                <th align="center">注册码</th>
+                <th align="center">注册码有效期（天）</th>
+                <th align="center">账号类型</th>
+                <th align="center">关联机构</th>
+                <th align="center">用户ID</th>
+                <th align="center">状态</th>
+                <th align="center">是否有效</th>
+                <th align="center">激活账户有效期（天）</th>
+                <th align="center">创建时间</th>
+                <th align="center">更新时间</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as organcode>
+            <tr align="center">
+            	<td align="center">${organcode_index+1+((result.pageinfo.currpage-1)*result.pageinfo.rowinpage)}</td>
+                <td>${(organcode.code)!}</td>
+                <td>${organcode.failuretime!}</td>
+                <td>
+                <#if (organcode.accounttype)! == 0>
+                	注册账号
+                </#if>
+                <#if (organcode.accounttype)! == 1>
+                	试用账号
+                </#if>
+                </td>
+                <td>${(organcode.organname)!}</td>
+                <td>${(organcode.uid?c)!}</td>
+                
+                <td>
+                <#if organcode.uid??>
+			　　    <font color="orange">已使用</font>
+			　　    <#else>
+				<font color="green">正常</font>
+				</#if>
+                </td>
+                
+                <td>
+                <#if (organcode.deleted)! == 0>
+                	<font color="green">启用</font>
+                </#if>
+                <#if (organcode.deleted)! == 1>
+                	<font color="red">删除</font>
+                </#if>
+                </td>
+                <td>${(organcode.effectiveday?c)!}</td>
+                <td>${(organcode.createdate)!}</td>
+                <td>${(organcode.tmv)!}</td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+
+
+
+
+
+</script>

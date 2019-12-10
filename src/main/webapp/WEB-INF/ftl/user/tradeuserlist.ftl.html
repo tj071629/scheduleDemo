@@ -1,0 +1,57 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}user/tradeuserlist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+            <label>会员等级:</label>
+            <select data-toggle="selectpicker">
+                <option value="">全部</option>
+            </select>&nbsp;
+            <label>渠道来源:</label>
+            <select data-toggle="selectpicker">
+                <option value="">全部</option>
+            </select>&nbsp;
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>用户编号</th>
+                <th>用户昵称</th>
+                <th>实盘数量</th>
+                <th>股票池数量</th>
+                <th>筛选条件数量</th>
+                <th>交易订单数</th>
+                <th>总消费额（元）</th>
+                <th>馒头币余额</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as uinfo>
+            <tr>
+                <td>${uinfo_index+1+((result.pageinfo.currpage-1)*result.pageinfo.rowinpage)}</td>
+                <td>${uinfo["id"]}</td>
+                <td>${uinfo["nickname"]!}</td>
+                <td>${uinfo["rtstocknum"]!}</td>
+                <td>${uinfo["poolnum"]!}</td>
+                <td>${uinfo["conditionnum"]!}</td>
+                <td>${uinfo["ordernum"]!}</td>
+                <td>${(uinfo["consumption"])!}</td>
+                <td>${uinfo["balance"]!}</td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>

@@ -1,0 +1,143 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}schedule/selnoticetemplate.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+        	<button type="button" style="float:left;margin-right:30px;" class="btn-green" data-icon="check" onclick='selectevent()'>选 择</button>&nbsp;
+            <label>模板名称:</label>
+            <input type="text" style="width:150px;" name="templatename" value="${templatename!}"/>
+            <label>模板内容:</label>
+            <input type="text" style="width:150px;" name="content" value="${content!}"/>
+            <input type="hidden" name="type" value="${type!}"/>
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent" id="schedule_div">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center" width="5%"></th>
+                <th align="center">模板名称</th>
+                <th align="center">模板内容</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as message>
+            <tr align="center">
+            	<td><input class="templatecb" type="checkbox" data-id="${(message.id?c)!}" data-name="${(message.templatename)!}" name="checkbox" data-toggle="icheck"/></td>
+                <td>${message.templatename!}</td>
+                <td align="left">${(message.content)!}</td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+var mapTemplate = new Map();
+
+setTimeout(function(){
+	$('.templatecb').on('ifChecked', function(event){
+		var templateid= $(this).attr("data-id");
+		var templatename= $(this).attr("data-name");
+		mapTemplate.put(templateid,templatename);  
+	}); 
+	
+	
+	$('.templatecb').on('ifUnchecked', function(event){
+		var templateid= $(this).attr("data-id");
+		mapTemplate.remove(templateid);
+	}); 
+
+},100);
+
+function selectevent(){
+	
+	if($("#schedule_div").find("input[type=checkbox]:checked").length == 0){
+		
+		$("body").alertmsg('info', "请先选择一个通知模板！",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+		
+	}else if($("#schedule_div").find("input[type=checkbox]:checked").length == 1){
+		
+		$(this).dialog('close', 'selnoticetemplate');	//关闭dialog
+		
+		if(mapTemplate.size() == 1){
+			$("#jobname_es").val(mapTemplate.get(mapTemplate.keySet()));
+			$("#jobname_es").blur();
+		}
+		
+	}else{
+		$("body").alertmsg('warn', "只能选择一个通知模板！",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'警告'})
+	}
+	
+}
+
+//定义map    
+function Map() {
+    this.container = {};
+}
+//将key-value放入map中    
+Map.prototype.put = function(key, value) {
+    try {
+        if (key != null && key != "")
+            this.container[key] = value;
+    } catch (e) {
+        return e;
+    }
+};
+ 
+//根据key从map中取出对应的value    
+Map.prototype.get = function(key) {
+    try {
+        return this.container[key];
+    } catch (e) {
+        return e;
+    }
+};
+ 
+//删除map中指定的key    
+Map.prototype.remove = function(key) {
+    try {
+        delete this.container[key];
+    } catch (e) {
+        return e;
+    }
+};
+ 
+//获取map的大小    
+Map.prototype.size = function() {
+ 
+    return this.keySet().length;
+}
+ 
+//返回map中的key值数组    
+Map.prototype.keySet = function() {
+    var keys = new Array();
+    for ( var p in this.container) {
+        keys.push(p);
+    }
+ 
+    return keys;
+}
+ 
+//返回map中的values值数组    
+Map.prototype.values = function() {
+    var valuesArray = new Array();
+    var keys = this.keySet();
+    for (var i = 0; i < keys.length; i++) {
+        valuesArray.push(this.container[keys[i]]);
+    }
+    return valuesArray;
+}
+ 
+</script>

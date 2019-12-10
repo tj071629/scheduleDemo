@@ -1,0 +1,88 @@
+<div class="bjui-pageContent">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+				<tr height="88px;">
+					<p>
+						<td><label for="j_custom_name" class="control-label x85">姓名：</label>
+							<label for="j_custom_name" class="control-label x85">${(uinfo.username)!}</label></td>
+						<td><label for="j_custom_fname" class="control-label x85">手机号：</label>
+							<label for="j_custom_name" class="control-label x85">${(uinfo.phone)!}</label></td>
+						<td><label for="j_custom_fname" class="control-label x85">邮箱：</label>
+							<label for="j_custom_name" class="control-label x85">${(uinfo.email)!}</label></td>
+					</p>
+				</tr>
+				<tr height="88px;">
+						<td><label for="" class="control-label x85">性别：</label>
+						<input
+						type="radio" disabled name="custom.isshow" id="j_custom_sex1"
+						data-toggle="icheck" value="true" data-rule="checked"
+						<#if uinfo.sex==1>
+						checked 
+						</#if>
+						data-label="男&nbsp;&nbsp;&nbsp;">
+						 <input type="radio" disabled
+						 <#if uinfo.sex==2>
+						checked 
+						</#if>
+						name="custom.isshow" id="j_custom_sex2" data-toggle="icheck"
+						value="false" data-label="女"></td>
+						
+						<td><label for="j_custom_name" class="control-label x85">角色：</label></td>
+	                	<td>
+		                	<table>
+				                	<#list rolelist as role>
+			                			<#if role_index % 5 == 0>
+			                				<tr>
+						                </#if>	
+						                
+							                <td style="height: 15px; padding: 5px 5px;">
+									                <input class="rolecheck" type="checkbox"  data-toggle="icheck" data-roleid="${role.id}" data-label="${role.name}" disabled
+									                <#if role.checked>
+									                	checked
+									                </#if>
+										             >
+										    <td>   
+						                        
+					                </#list>
+				            </table>
+	                	</td>
+				</tr>	
+                <tr height="88px;">
+					<p>
+						<td colspan="3">
+							<div align="center"><button type="button" class="btn-default" onclick="$(this).dialog('close', 'showinfo_page');">关闭</button></div>
+						</td>
+					</p>
+				</tr>
+			</tbody>
+		</table>
+</div>
+<script>
+function updatepwd(){
+	var opwd=$("#opwd").val();
+	var npwd=$("#newpwd").val();
+	var npwd2=$("#newpwd2").val();
+	if(npwd!=npwd2){
+		altmsg("两次密码不一致","密码不一致");
+		return;
+	}
+	if(npwd.length<6||npwd.length>12){
+		altmsg("新密码长度在6-12位之间","长度不对");
+		return;
+	}
+	var params={
+			pwd:$.md5(opwd),
+			npwd:$.md5(npwd)
+	}
+	var url="${ctx}user/modifypwd";
+	querydata(url,params,function(rtndata){
+		var success=rtndata.success;
+		if(success>0){
+			altmsg("修改密码成功","修改密码成功");
+		}else{
+			var msg=rtndata.msg;
+			altmsg(msg,"修改错误");
+		}
+	});
+}
+</script>

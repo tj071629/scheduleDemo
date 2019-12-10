@@ -1,0 +1,57 @@
+<div class="bjui-pageContent">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+				<tr>
+					<td>
+						<button type="button" onclick="producecode()" class="btn-default" data-icon="check">生成邀请码</button>
+						<!-- <label for="j_custom_name" class="control-label x85">邀请码：</label> -->
+						<input id="invcode" type="text" readonly name="custom.name" id="j_custom_name" value=""  data-rule="required" size="15">
+					</td>
+					<td>
+						<label for="j_custom_name" class="control-label x85">已有邀请码：</label>
+                        <select id="invcodelist" style="width:100px;" name ='invcode'> 
+                        </select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+</div>
+<script>
+$(document).ready(function () {
+	var posturl='${ctx}rests/invcodelist';
+	$.ajax( {
+		url : posturl,
+		type : "POST",
+		dataType : "json",
+		success : function(data){
+			$("#invcodelist").empty();
+			var str ="";
+			jQuery.each(data.invcodelist, function(i,item){  
+				//alert("item.invcode :"+ item.invcode)
+                 str += "<option name ='invcode'>"+item.invcode+"</option>"; 
+            }); 
+			$("#invcodelist").append(str);
+		}
+	});
+})
+function producecode(){
+	$("#invcode").val("");
+	var posturl="${ctx}rests/produceincode";
+	$.ajax({
+		type : "POST",
+		url : posturl,
+		contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+		async:true,
+		dataType : "json",
+		success : function(rtndata) {
+			if(rtndata.status==1){
+				$("body").alertmsg('info', '邀请码生成成功！',{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+				$("#invcode").val(rtndata.invcode);
+			}else{
+				$("body").alertmsg('info', '邀请码生成失败,请联系管理员！',{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+			}
+		}
+	});
+	
+}
+</script>

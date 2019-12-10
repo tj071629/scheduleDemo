@@ -1,0 +1,161 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}organcode/organcodelist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+        	<button type="button" style="float:left;margin-right:30px;" class="btn-green" data-icon="plus" onclick='addorgancode(this)'>添 加</button>&nbsp;
+            <label>注册码:</label>
+            <input type="text" style="width:110px;" name="code" value="${code!}"/>
+            <label>账号类型:</label>
+            <select data-toggle="selectpicker" name="accounttype">
+                <option value="99">全部</option>
+                <option value="0">注册账户</option>
+                <option value="1">试用账户</option>
+            </select>&nbsp;
+            <label>关联机构:</label>
+            <select id="oc_relationorgan" name="relationorgan"  style="width:150px;height:25px;" />
+            <label>状态:</label>
+            <select data-toggle="selectpicker" name="status">
+                <option value="99">全部</option>
+                <option value="0">正常</option>
+                <option value="1">已使用</option>
+            </select>&nbsp;
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center">序号</th>
+                <th align="center">注册码</th>
+                <th align="center">注册码有效期（天）</th>
+                <th align="center">账号类型</th>
+                <th align="center">关联机构</th>
+                <th align="center">状态</th>
+                <th align="center">是否有效</th>
+                <th align="center">激活账户有效期（天）</th>
+                <th align="center">创建时间</th>
+                <th align="center">更新时间</th>
+                <th align="center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as organcode>
+            <tr align="center">
+            	<td>${organcode_index+1+((result.pageinfo.currpage-1)*result.pageinfo.rowinpage)}</td>
+                <td>${(organcode.code)!}</td>
+                <td>${organcode.failuretime!}</td>
+                <td>
+                <#if (organcode.accounttype)! == 0>
+                	注册账号
+                </#if>
+                <#if (organcode.accounttype)! == 1>
+                	试用账号
+                </#if>
+                </td>
+                <td>${(organcode.organname)!}</td>
+                
+                <td>
+                <#if organcode.uid??>
+			　　    <font color="orange">已使用</font>
+			　　    <#else>
+				<font color="green">正常</font>
+				</#if>
+                </td>
+                
+                <td>
+                <#if (organcode.deleted)! == 0>
+                	<font color="green">启用</font>
+                </#if>
+                <#if (organcode.deleted)! == 1>
+                	<font color="red">删除</font>
+                </#if>
+                </td>
+                <td>${(organcode.effectiveday?c)!}</td>
+                <td>${(organcode.createdate)!}</td>
+                <td>${(organcode.tmv)!}</td>
+                <td>
+                
+               	<button type="button" class="btn-green" onclick='editorgancode(this, "${(organcode.id?c)!}", "${(organcode.organid?c)!}", "${(organcode.uid?c)!}", "${(organcode.deleted)!}")'>编辑</button>
+               	<button type="button" class="btn-red" onclick='delorgancode("${(organcode.id)!}", "${(organcode.uid?c)!}","${(organcode.deleted)!}")'>删除</button>
+                
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+
+<script>
+
+ocrelationorganlist();
+
+function ocrelationorganlist(){
+	var posturl='${ctx}organcode/relationorganlist';
+	$.ajax( {
+		url : posturl,
+		type : "POST",
+		dataType : "json",
+		success : function(data){
+			var str = "<option name ='relationorgan' value='99'>全部</option>";
+			jQuery.each(data.indexnamelist, function(i,item){  
+				str += "<option name ='relationorgan' value='"+item.organid+"'>"+item.organname+"</option>";
+            }); 
+			$("#oc_relationorgan").append(str);
+		}
+	});
+}
+
+function addorgancode(obj){
+	
+	$(obj).dialog({id:'addorgancode', width:620, url:'${ctx}organcode/editorgancode.html?organcodeid=-1', title:'机构注册码新增'});
+}
+
+function editorgancode(obj,organcodeid,organid,uid,deleted){
+	
+	if((uid && uid != '') || deleted == 1){
+		$("body").alertmsg('warn', "编辑失败,当前激活码已使用或被删除",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'警告'})
+		return;
+	}
+	
+	$(obj).dialog({id:'editorgancode', width:620, url:'${ctx}organcode/editorgancode.html?organcodeid='+organcodeid+'&organid='+organid, title:'机构注册码编辑'});
+}
+
+function refreshData(){
+	$("#pagerForm").submit();
+};
+
+function delorgancode(organcodeid,uid,deleted){
+	
+	if((uid && uid != '') || deleted == 1){
+		$("body").alertmsg('warn', "编辑失败,当前激活码已使用或被删除",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'警告'})
+		return;
+		
+	}else{
+		
+		$("body").alertmsg('confirm', '确认删除当前机构注册码？', {
+			okCall : function() {
+				
+				var url='${ctx}organcode/delorgancode';
+				var params={id:organcodeid};
+				var callback=function(rtndata){
+					var success=rtndata.success;
+					refreshData();
+				}
+				querydata(url,params,callback);
+				
+			}
+		})
+	}
+}
+</script>

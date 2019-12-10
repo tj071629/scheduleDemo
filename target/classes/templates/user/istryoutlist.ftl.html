@@ -1,0 +1,239 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}user/istryoutlist.html" method="post">
+        <input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+            <input id="usernickname" name="nickname" value="${nickname!}" placeholder="用户昵称" >
+            <input id="userphone" name="phone" value="${phone!}" placeholder="手机号" >
+            <label>关联机构:</label>
+            <select id="it_relationorgan" name="relationorgan"  style="width:150px;height:25px;" />
+            <button type="submit" class="btn-default" data-icon="search">查询</button>&nbsp;
+            <button onclick="refreshData()" class="btn-default" data-icon="search">刷新</button>&nbsp;
+          <!--   <button onclick="batchdel()" class="btn-default" id="batchdel">删除</button>&nbsp; -->
+            <button onclick="getuserids()" class="btn-default" id="batchdel">删除</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <!-- <th align="center">序号</th> -->
+                <!-- <th align="center">用户编号</th> -->
+                	<!--  <input type="checkbox" value="0" name="check"/> -->
+                <th align="center"></th>
+                <th align="center">用户昵称</th>
+                <th align="center">手机号</th>
+                <th align="center">开始日期</th>
+                <th align="center">结束日期</th>
+                <th align="center">剩余天数(天)</th>
+                <th align="center">关联机构</th>
+                <th align="center">机构ID</th>
+                <th align="center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list result.list as uinfo>
+            <tr>
+              <!--   <td align="center">${uinfo_index+1+((result.pageinfo.currpage-1)*result.pageinfo.rowinpage)}</td> -->
+               <!--  <td align="center">${uinfo["id"]?c}</td> -->
+                <td align="center">
+	                <input type="checkbox" value="${uinfo["id"]?c}" name="checkbox"/>
+                </td>
+                <td align="center">${uinfo["nickname"]!}</td>
+                <td align="center">${uinfo["phone"]!}</td>
+                <td align="center">${(uinfo["startdate"]?string("yyyy-MM-dd"))!}</td>
+                <td align="center">${(uinfo["enddate"]?string("yyyy-MM-dd"))!}</td>
+                <td align="center">
+                	<#if (uinfo.surplusdays = 0) >
+               			0天
+				    <#elseif (uinfo.surplusdays == 99999)>  
+				    	永久
+				    <#elseif (uinfo.surplusdays lt 0)>  
+				    	过期
+				    <#else>  
+				    	${uinfo["surplusdays"]?c}天
+				    </#if>
+                </td>
+                
+                <#if (uinfo.orgid)?? && (uinfo.orgid)! &gt; 0>
+                	<td align="center">${uinfo["organname"]!}</td>
+                <#elseif (uinfo.orgid)?? &&(uinfo.orgid)! &lt; 0>
+				  	<td>个人</td>
+				<#else>
+					<td>-</td>
+				</#if>
+                
+                <td align="center">${uinfo["orgid"]?c!}</td>
+                <td align="center">
+                	<button type="button" class="btn-orange" onclick='renewed(this,${uinfo["id"]?c})'>续费</button>
+                	&nbsp;&nbsp;&nbsp;
+                	<button type="button" class="btn-green" onclick='edituser(this,${uinfo["id"]?c})'>查看</button>
+                	&nbsp;&nbsp;&nbsp;
+                	<#if (uinfo.freeze == 1) >
+	                	<button type="button" class="btn-blue" onclick='unfreezeuser(${uinfo["id"]?c})'>解冻</button>
+				    <#else>  
+	                	<button type="button" class="btn-blue" onclick='freezeuser(${uinfo["id"]?c})'>冻结</button>
+				    </#if>
+                	&nbsp;&nbsp;&nbsp;
+              	  <button type="button" class="btn-green" onclick='transform(${uinfo["id"]?c})'>转为正式账号</button>
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+    <div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+<script>
+
+itrelationorganlist();
+
+function itrelationorganlist(){
+	var posturl='${ctx}organcode/relationorganlist';
+	$.ajax( {
+		url : posturl,
+		type : "POST",
+		dataType : "json",
+		success : function(data){
+			var str = "<option name ='relationorgan' value='0'>全部</option>";
+			jQuery.each(data.indexnamelist, function(i,item){  
+				
+			   if('${(relationorgan?c)!}' == item.organid){
+				   str += "<option name ='relationorgan' value='"+item.organid+"' selected='selected'>"+item.organname+"</option>";
+			   }else{
+				   str += "<option name ='relationorgan' value='"+item.organid+"'>"+item.organname+"</option>";
+			   }
+			   
+            }); 
+			$("#it_relationorgan").append(str);
+		}
+	});
+}
+
+	setTimeout(function(){
+		$("#userphone").selectpicker('val', '${userphone!}');
+		$("#usernickname").selectpicker('val', '${usernickname!}');
+	},200);
+	function refreshData(){
+		$("#pagerForm").submit();
+	};
+	function delusers(userids){
+		var posturl="${ctx}user/delusers";
+		var postdata={userids:userids};
+		if (confirm("确认删除吗?")) {
+			$.ajax({
+				type : "POST",
+				url : posturl,
+				data : postdata,
+				contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+				dataType : "json",
+				success : function(rtndata) {
+					if (rtndata.success == 1) {
+						$("body").alertmsg('ok', "删除成功",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+						refreshData();
+					}else{
+						$("body").alertmsg('error', "删除失败,请联系管理员",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+					}
+				}
+			}) 
+		}
+	};
+	function getuserids(){
+		var ids="";
+	    $.each($('input:checkbox:checked'),function(){
+	    	ids +=+$(this).val()+",";
+	    });
+	    delusers(ids);
+	} 
+	function freezeuser(userid){
+		var posturl="${ctx}user/freezeuser";
+		var postdata={userid:userid};
+		
+		$("body").alertmsg('confirm', '确认冻结吗?', {
+			okCall : function() {
+				
+				$.ajax({
+					type : "POST",
+					url : posturl,
+					data : postdata,
+					contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+					dataType : "json",
+					success : function(rtndata) {
+						if (rtndata.success == 1) {
+							$("body").alertmsg('ok', "冻结成功",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+							refreshData();
+						}else{
+							$("body").alertmsg('error', "冻结失败,请联系管理员",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+						}
+					}
+				}) 
+			}
+		})
+		
+	};
+	function unfreezeuser(userid){
+		var posturl="${ctx}user/unfreezeuser";
+		var postdata={userid:userid};
+		
+		$("body").alertmsg('confirm', '确认解冻吗?', {
+			okCall : function() {
+				
+				$.ajax({
+					type : "POST",
+					url : posturl,
+					data : postdata,
+					contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+					dataType : "json",
+					success : function(rtndata) {
+						if (rtndata.success == 1) {
+							$("body").alertmsg('ok', "解冻成功",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+							refreshData();
+						}else{
+							$("body").alertmsg('error', "解冻失败,请联系管理员",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+						}
+					}
+				}) 
+			}
+		})
+		
+	};
+	function transform(userid){
+		var posturl="${ctx}user/transform";
+		var postdata={userid:userid};
+		
+		$("body").alertmsg('confirm', '确认转换为正式账号吗？', {
+			okCall : function() {
+				
+				$.ajax({
+					type : "POST",
+					url : posturl,
+					data : postdata,
+					contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+					dataType : "json",
+					success : function(rtndata) {
+						if (rtndata.success == 1) {
+							$("body").alertmsg('ok', "转换成功",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+							refreshData();
+						}else{
+							$("body").alertmsg('error', "转换失败,请联系管理员",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+						}
+					}
+				}) 
+			}
+		})
+		
+	};
+	function renewed(obj,uid){
+		 $(obj).dialog({id:'organrenewed', url:'${ctx}user/organrenewed.html?userid='+uid, title:'机构用户续费'}); 
+	}
+	function edituser(obj,uid){
+		$(obj).dialog({id:'istryqueryuser', url:'${ctx}user/querytryoutuser.html?userid='+uid, title:'查看试用账号用户'});
+	}
+</script>

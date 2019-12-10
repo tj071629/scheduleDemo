@@ -1,0 +1,152 @@
+<div class="bjui-pageContent">
+		<form class="cmxform" id="organcodeForm" method="get" action="" autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+				<#if organcode.code?? && organcode.code != "">
+					<tr>
+	                	<td><label for="j_organ_code" class="control-label x120">注册码：</label>
+	                		<input type="text"  name="code"
+							value="${(organcode.code)!}" size="15" readonly="readonly"></td>
+	                </tr>
+                </#if>
+				<tr>
+					<td><label for="j_organ_codevalid" class="control-label x120">注册码有效期：</label>
+						<input type="text"  name="codevalid" id="codevalid" value="7" data-rule="required;" size="15">&nbsp;<font color='red'>*</font>&nbsp;天</td>
+				</tr>
+                
+                <tr>
+				<td><label for="" class="control-label x120">账号类型：</label> 
+					<input
+					type="radio" name="accounttype" id="j_organ_accounttype1"
+					data-toggle="icheck" value="false"
+					<#if organcode.accounttype?? && organcode.accounttype==0>
+					checked 
+					</#if>
+					data-label="注册账号">
+					<input type="radio"
+					<#if organcode.accounttype?? && organcode.accounttype==1>
+					checked
+					</#if>
+					name="accounttype" id="j_organ_accounttype2"
+					data-toggle="icheck" value="true" data-label="试用账号">
+					&nbsp;&nbsp;<font color='red'>*
+					</td>
+			</tr>
+                
+                <tr>
+                	<td><label for="j_organ_accountvalid" class="control-label x120">账户有效期：</label>
+                		<input type="text"  name="accountvalid" id="accountvalid"
+						value="${(organcode.effectiveday?c)!}" size="15">&nbsp;<font color='red'>*</font>&nbsp;天 <font color="orange">（当前注册码激活企业账号后的生效时间）</font></td>
+                </tr>
+                
+                <tr>
+                	<td><label for="j_organ_accountvalid" class="control-label x120">关联机构：</label>
+                		<span><select id="batchrelationorgan" name="batchrelationorgan"  style="width:150px;height:25px;" /></span>&nbsp;<font color='red'>*</font>
+                	</td>
+                </tr>
+                
+                <tr>
+                	<td><label for="j_organ_accountvalid" class="control-label x120">生成数量：</label>
+                		<input type="text"  name="batchcodenumber" id="batchcodenumber"
+						value="" size="15">&nbsp;<font color='red'>*</font>&nbsp;张 <font color="orange">（数量过大可能会有稍许延迟，请耐心等待）</font></td>
+                </tr>
+                
+			</tbody>
+			
+			<tfoot>
+				<tr>
+                	<td><label class="control-label x30"></label><span class="font-size:5pd;" id="batchcode"></span>
+                	</td>
+                </tr>
+			</tfoot>
+		</table>
+		
+		<input type="hidden" name="organcodeid" value="${(organcodeid?c)!}">
+		
+		<br/><br/>
+		
+		<div align="center" id="btn_modal"><button type="button" id="batchsaveaccountcode" class="btn-default" data-icon="save">保存</button></div>
+
+</form>
+
+</div>
+
+<script>
+
+batchrelationorganlist();
+
+//校验表单
+$('#organcodeForm').validator({
+    fields: {
+        'codevalid': 'required; length(1~6); integer(+)',
+        'accountvalid': 'required; length(1~6); integer(+)',
+        'batchcodenumber': 'required; length(1~6); integer(+)'
+    },
+    valid: function(form){
+    	//触发提交后台操作
+    	batchsaveaccountcode();
+    }
+}).on("click", "#batchsaveaccountcode", function(e){
+    $("#batchcode").html("");
+    $(e.delegateTarget).trigger("validate");
+});
+
+
+function batchrelationorganlist(){
+	var posturl='${ctx}organcode/relationorganlist';
+	$.ajax( {
+		url : posturl,
+		type : "POST",
+		dataType : "json",
+		success : function(data){
+			var str = "";
+			jQuery.each(data.indexnamelist, function(i,item){  
+			   if('${(organid?c)!}' == item.organid){
+				   str += "<option name ='relationorgan' value='"+item.organid+"' selected='selected'>"+item.organname+"</option>";
+			   }else{
+				   str += "<option name ='relationorgan' value='"+item.organid+"'>"+item.organname+"</option>";
+			   }
+               
+            }); 
+			$("#batchrelationorgan").append(str);
+		}
+	});
+}
+
+
+ function batchsaveaccountcode(){
+	
+	var organcodeid='${(organcodeid?c)!}';
+	var codevalid=$("#codevalid").val();
+	
+	var accounttype=0;
+	if($("#j_organ_accounttype2").is(":checked")){
+		accounttype=1;
+	}
+	var accountvalid=$("#accountvalid").val();
+	var relationorganid=$("#batchrelationorgan").val();
+	var batchcodenumber=$("#batchcodenumber").val();
+	
+	var url='${ctx}organcode/batchsaveaccountcode';
+	var params={codevalid:codevalid,accounttype:accounttype,accountvalid:accountvalid,relationorganid:relationorganid,batchcodenumber:batchcodenumber};
+	
+	var callback=function(rtndata){
+		
+		var success=rtndata.success;
+		var code=rtndata.code;
+		
+		if(code){
+			$("#batchcode").html("<b>您的注册码是：</b><font style='color:red;font-size:20px'>"+code+"</font>");
+		}
+		if(success){
+			altmsg("保存成功！","保存成功",function(){});
+		}
+		
+		$("#pagerForm").submit();
+		
+	}
+	querydata(url,params,callback); 
+
+}
+
+</script>

@@ -1,0 +1,120 @@
+<style>
+.widget-header-small {
+	min-height: 31px;
+	padding-left: 10px;
+}
+
+.widget-header {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	position: relative;
+	min-height: 38px;
+	background: #f7f7f7;
+	background-image: -webkit-gradient(linear, left 0, left 100%, from(#fff),
+		to(#eee));
+	background-image: -webkit-linear-gradient(top, #fff, 0%, #eee, 100%);
+	background-image: -moz-linear-gradient(top, #fff 0, #eee 100%);
+	background-image: linear-gradient(to bottom, #fff 0, #eee 100%);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff',
+		endColorstr='#ffeeeeee', GradientType=0);
+	color: #669fc7;
+	border: 1px solid #CCC;
+	border-bottom: 1px solid #DDD;
+	padding-left: 12px
+}
+
+.col-xs-6,.col-sm-3,.col-sm-9{
+    position: relative;
+    min-height: 1px;
+    padding-right: 12px;
+    padding-left: 12px;
+}
+
+
+.btn-sm {
+    border-width: 1px;
+    font-size: 11px;
+    padding: 4px 9px;
+    line-height: 1.39;
+}
+
+.btn-grey, .btn-grey:focus {
+    background-color: #a0a0a0!important;
+    border-color: #a0a0a0;
+}
+
+.col-md-offset-3{margin-left:25%}
+
+</style>
+	
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+				<span id="ui-id-26" class="ui-dialog-title">
+					<div class="widget-header widget-header-small">
+						<h4 class="smaller">
+							<i class="icon-ok" id="input-title"></i>
+						</h4>
+					</div>
+				</span>
+			</div>
+			<form id="pri_fmt" role="form" class="form-horizontal">
+			<input type="hidden" name="id" id="editId" value="${(pri.id?c)!0}">
+			<input id="superPriId" name="pid" type="hidden" value="${(superPri.id?c)!}"/>
+			<div class="modal-body">
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-3">
+						<label class="col-sm-12 control-label no-padding-right" >上级菜单</label>
+					</div>
+					<div class="col-xs-6 col-sm-9">
+						<input type="text" class="col-xs-12 col-sm-8"  value="${(superPri.priname)! }" readonly="readonly"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-3">
+						<label class="col-sm-12 control-label no-padding-right" for="priname">权限名称</label>
+					</div>
+					<div class="col-xs-6 col-sm-9">
+						<input type="text" name="priname" id="priname" class="col-xs-12 col-sm-8" placeholder="请输入权限名称 " value="${(pri.priname)! }"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-3">
+						<label class="col-sm-12 control-label no-padding-right" for="uri">权限URL</label>
+					</div>
+					<div class="col-xs-6 col-sm-9">
+						<input type="text" name="uri" id="uri" class="col-xs-12 col-sm-8" placeholder="请输入权限路径" value="${(pri.uri)!}"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-3">
+						<label class="col-sm-12 control-label no-padding-right" for="priorder">权限顺序</label>
+					</div>
+					<div class="col-xs-6 col-sm-9">
+						<input type="text" name="priorder" id="priorder" class="col-xs-12 col-sm-8" placeholder="请输入权限顺序" value="${(pri.priorder)!}"/>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="col-md-offset-3 col-md-9">
+					<button class="btn-sm btn-primary" type="button" id="savepri">
+						保存
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn-sm btn-primary btn-grey" type="button" id="closepri">
+						关闭
+					</button>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript">
+		/* $(".chosen-select").chosen();  */
+	
+		$(document).ready(function(){
+			Pri.loadInputPage();
+		});
+	</script>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list>
+	<!-- <db>
+		<key>QF</key>
+		<url><![CDATA[jdbc:mysql://127.0.0.1:13306/QF?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>qianyan</username>
+		<pwd><![CDATA[fq5tDNUct1Cr]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>5</maxconn>
+	</db>
+	
+	<db>
+		<key>ebread</key>
+		<url><![CDATA[jdbc:mysql://127.0.0.1:18066/EQDB?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>feng</username>
+		<pwd><![CDATA[fengjinxin_9fbank]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db>
+	
+	<db>
+		<key>ebweb</key>
+		<url><![CDATA[jdbc:mysql://127.0.0.1:14406/ebweb?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>qfadmin</username>
+		<pwd><![CDATA[H&6hdkfjdk]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db>
+	
+	<db>
+		<key>forum</key>
+		<url><![CDATA[jdbc:mysql://127.0.0.1:14406/forum?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>qfadmin</username>
+		<pwd><![CDATA[H&6hdkfjdk]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db>
+	<db>
+		<key>pvdatas</key>
+		<url><![CDATA[jdbc:mysql://127.0.0.1:14406/pvdatas?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>qfadmin</username>
+		<pwd><![CDATA[H&6hdkfjdk]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db> -->
+	
+	<db>
+		<key>ebread</key>
+		<url><![CDATA[jdbc:mysql://localhost:18066/EQDB?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>feng</username>
+		<pwd><![CDATA[fengjinxin_9fbank]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db>
+	
+	<db>
+		<key>ebweb</key>
+		<url><![CDATA[jdbc:mysql://localhost:23306/ebweb?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>qfadmin</username>
+		<pwd><![CDATA[H&6hdkfjdk]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db>
+	<db>
+		<key>forum</key>
+		<url><![CDATA[jdbc:mysql://localhost:23306/forum?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>qfadmin</username>
+		<pwd><![CDATA[H&6hdkfjdk]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db>
+	<db>
+		<key>pvdatas</key>
+		<url><![CDATA[jdbc:mysql://localhost:23306/pvdatas?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>qfadmin</username>
+		<pwd><![CDATA[H&6hdkfjdk]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db>
+	<db>
+		<key>ebtrade</key>
+		<url><![CDATA[jdbc:mysql://localhost:33306/ntrade?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>fjx</username>
+		<pwd><![CDATA[feng_lianghuaxg6k4ht]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db>
+	<db>
+		<key>qf</key>
+		<url><![CDATA[jdbc:mysql://localhost:13306/ebread?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>qianyan</username>
+		<pwd><![CDATA[fq5tDNUct1Cr]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+     </db>
+     <db>
+		<key>oper</key>
+		<url><![CDATA[jdbc:mysql://localhost:23306/oper?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useCompression=true&useNewIO=true]]></url>
+		<username>qfadmin</username>
+		<pwd><![CDATA[H&6hdkfjdk]]></pwd>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<maxconn>10</maxconn>
+	</db>
+	
+</list>

@@ -1,0 +1,45 @@
+<div class="bjui-pageHeader">
+    <form id="pagerForm" data-toggle="ajaxsearch" action="" method="post">
+   		<input type="hidden" name="pageSize" value="${result.pageinfo.totalpage}">
+        <input type="hidden" name="pageCurrent" value="${result.pageinfo.currpage}">
+        <div class="bjui-searchBar">
+           <button type="button" style="float:left;margin-right:30px;" class="btn-green" data-icon="plus" onclick='addonlineindex(this)'>添 加</button>&nbsp;
+        </div>
+    </form>
+</div>
+<div class="bjui-pageContent tableContent">
+    <table  id="tableExcel"data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th align="center">编号</th>
+                <th align="center">指标名称</th>
+                <th align="center">指标类型</th>
+                <th align="center">上线时间</th>
+                <th align="center">备注</th>
+            </tr>
+        </thead>
+        <tbody>
+        	 <#list result.list as onlineindexinfo>
+        	<tr>
+                <td align="center">${onlineindexinfo["id"]}</td>
+                <td align="center">${onlineindexinfo["indexname"]!}</td>
+                <td align="center">${onlineindexinfo["indextype"]!}</td>
+                <td align="center">${(onlineindexinfo["datevalue"]?string("yyyy-MM-dd"))!}</td>
+                <td align="center">${onlineindexinfo["descvalue"]!}</td>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageFooter">
+	<div class="pages">
+        <span>&nbsp;共 ${result.pageinfo.totalrow} 条</span>
+    </div>
+    <div class="pagination-box" data-toggle="pagination" data-total="${result.pageinfo.totalrow}" data-page-size="${result.pageinfo.rowinpage}" 
+    data-page-current="${result.pageinfo.currpage}">
+    </div>
+</div>
+<script>
+function addonlineindex(obj){
+	$(obj).dialog({id:'onlineindex', url:'${ctx}online/addonlineindex.html', title:'新增上线指标'});
+}
+</script>

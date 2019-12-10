@@ -1,0 +1,65 @@
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th width="5%">编号</th>
+                <th>权限名称</th>
+                <th>层级</th>
+                <th>路径</th>
+                <th width="5%">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list prilist as pri>
+            <tr class="pri_${pri.id!}">
+                <td>${pri.id!}</td>
+                <td>${pri.priname!}</td>
+                <td>${pri.level!}</td>
+                <td>${pri.uri!}</td>
+                <td>
+                <input class="pricheck" type="checkbox"  data-toggle="icheck" data-priid="${pri.id}"
+                <#if pri.checked>
+                	checked
+                </#if>
+                >
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<script>
+setTimeout(function(){
+	$('.pricheck').on('ifChecked', function(event){
+		  var pri=$(this).attr("data-priid");
+		  addPri(pri);
+	});
+	$('.pricheck').on('ifUnchecked', function(event){
+		 var pri=$(this).attr("data-priid");
+		 removePri(pri)
+	});
+},200);
+function addPri(priid){
+	var url='${ctx}admin/addrolepri';
+	var params={roleid:${roleid},priid:priid};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success){
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+function removePri(priid){
+	var url='${ctx}admin/delrolepri';
+	var params={roleid:${roleid},priid:priid};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success){
+		}
+		
+	}
+	querydata(url,params,callback);
+	
+}
+</script>

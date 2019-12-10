@@ -1,0 +1,47 @@
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th width="5%">编号</th>
+                <th>角色名称</th>
+                <th width="5%">操作</th>
+                <th width="5%">授权</th>
+                <th width="5%">删除</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list roleses as role>
+            <tr class="role_${role.id}">
+                <td>${role.id}</td>
+                <td>${role.name}</td>
+                <td><button type="button" class="btn-green" onclick='editrole(this,${role.id})'>编辑</button></td>
+                <td><button type="button" class="btn-green" onclick='editrolepri(this,${role.id})'>权限</button></td>
+                <td><button type="button" class="btn-red" onclick='delrole(this,${role.id})'>删除</button></td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<script>
+function editrolepri(obj,roleid){
+	$(obj).navtab({id:'roleedit', url:'${ctx}admin/rolepri.html?roleid='+roleid, title:'权限编辑'});
+}
+
+function editrole(obj,roleid){
+	$(obj).navtab({id:'roleedit', url:'${ctx}admin/editrole.html?roleid='+roleid, title:'角色编辑'});
+}
+function delrole(obj,roleid){
+	var url='${ctx}admin/delrole';
+	var params={roleid:roleid};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success){
+			altmsg("删除成功","删除成功",function(){
+			});
+			$(".role_"+roleid).remove();
+		}
+		
+	}
+	querydata(url,params,callback);
+}
+</script>

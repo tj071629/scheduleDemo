@@ -1,0 +1,160 @@
+<div class="bjui-pageContent">
+		<form class="cmxform" id="usereditmodalForm" method="get" action="" autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+				<tr>
+					<td><label for="j_custom_name" class="control-label x85">登录名：</label>
+						<input type="text" 
+						<#if userid gt 0 >
+						readonly
+						</#if>
+						 name="name" id="adminname"
+						value="${admin.username!}" data-rule="required" size="15"></td>
+					<td><label for="j_custom_fname" class="control-label x85">手机号：</label>
+						<input type="text"  name="fname" id="adminphone"
+						value="${admin.phone!}" size="15"></td>
+					<td><label for="j_custom_lname" class="control-label x85">邮箱：</label>
+						<input type="text"  name="lname" id="adminemail"
+						value="${admin.email!}" size="15"></td>
+				</tr>
+				<tr>
+					<td><label for="" class="control-label x85">性别：</label> 
+						<input
+						type="radio"  name="sex" id="j_custom_sex1"
+						data-toggle="icheck" value="true" data-rule="checked"
+						<#if admin.sex==1>
+						checked 
+						</#if>
+						data-label="男&nbsp;&nbsp;">
+						 <input type="radio" 
+						 <#if admin.sex==2>
+						checked 
+						</#if>
+						name="sex" id="j_custom_sex2" data-toggle="icheck"
+						value="false" data-label="女"></td>
+					<td>
+					<td></td>
+				</tr>
+                
+                <tr>
+                	<td colspan="4"><label for="j_custom_name" class="control-label x85">密码：</label>
+						<input type="password"  name="opwd" id="userpwd"
+						value="" data-rule="required" size="15"></td>
+                </tr>
+                
+                <tr>
+                	<td ><label for="j_custom_name" class="control-label x85">角色：</label></td>
+                	<td colspan="3">
+	                	<table>
+			                	<#list rolelist as role>
+		                			<#if role_index % 5 == 0>
+		                				<tr>
+					                </#if>	
+					                
+						                <td style="height: 15px; padding: 5px 5px;">
+								                <input class="rolecheck" type="checkbox"  data-toggle="icheck" data-roleid="${role.id}" data-label="${role.name}"
+								                <#if role.checked>
+								                	checked
+								                </#if>
+									             >
+									    <td>   
+					                       
+				                </#list>
+			            </table>
+                	</td>
+                </tr>
+			</tbody>
+		</table>
+		
+		<br/><br/><br/><br/><br/><br/>
+
+		<div align="right">
+			<button type="button" id="addAdmin" class="btn-default" data-icon="save">保存</button>&nbsp;
+			<button type="button" onclick="addRole(true)" class="btn-default" data-icon="save">保存角色</button>
+		</div>
+
+		</form>
+
+</div>
+
+<script>
+
+
+//校验表单
+$('#usereditmodalForm').validator({
+    fields: {
+        'fname': 'mobile;',
+        'lname': 'email; ',
+        'opwd': 'required;  password;'
+    },
+    valid: function(form){
+    	//触发提交后台操作
+    	addAdmin();
+    }
+}).on("click", "#addAdmin", function(e){
+    $(e.delegateTarget).trigger("validate");
+});
+
+
+function addAdmin(){
+	
+	var adminid='${userid}';
+	var pwd=$("#userpwd").val();
+	var adminphone=$("#adminphone").val();
+	//pwd=$.md5(pwd);
+	var sex=1;
+	if($("#j_custom_sex2").is(":checked")){
+		sex=2;
+	}	
+	var adminname=$("#adminname").val();
+	var adminphone=$("#adminphone").val();
+	var adminemail=$("#adminemail").val();
+	var url='${ctx}admin/addadmin';
+	var params={name:adminname,email:adminemail,phone:adminphone,sex:sex,pwd:pwd};
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success){
+			$(this).dialog('close', 'edituser');	//关闭dialog
+			altmsg("保存成功","保存成功",function(){
+			});
+			addRole(false);
+			$("#pagerForm").submit();
+			
+		}
+		
+	}
+	querydata(url,params,callback);
+	
+}
+
+
+function addRole(showmsg){
+	
+	var adminname=$("#adminname").val();
+	
+ 	$(".rolecheck").each(function(){
+		var roleid=$(this).attr("data-roleid");
+		var checked=$(this).is(":checked");
+		
+		if(checked){
+			var url='${ctx}admin/adduserrole';
+			var params={adminname:adminname,roleid:roleid};
+			querydata(url,params);
+		}else{
+			var url='${ctx}admin/deluserrole';
+			var params={adminname:adminname,roleid:roleid};
+			querydata(url,params);
+		}
+		
+	});
+ 	
+ 	if(showmsg){
+		altmsg("保存成功","保存成功",function(){
+		});
+		$(this).dialog('close', 'edituser');	//关闭dialog
+		$("#pagerForm").submit();
+	}
+ }
+
+
+</script>

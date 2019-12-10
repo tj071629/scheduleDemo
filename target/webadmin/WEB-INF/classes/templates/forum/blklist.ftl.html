@@ -1,0 +1,27 @@
+
+<div class="bjui-pageContent tableContent">
+    <table data-toggle="tablefixed" data-width="100%" data-nowrap="true">
+        <thead>
+            <tr>
+                <th>板块ID</th>
+                <th>板块名称</th>
+                <th>帖子数</th>
+                <th>评论数</th>
+                <th>点赞数</th>
+                <th>用户数</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<#list blklist as blk>
+            <tr>
+                <td>${blk.id}</td>
+                <td>${blk.name}</td>
+                <td>${blk.vnum!}</td>
+                <td>${blk.cmtnum!}</td>
+                <td>${blk.voteupnum!}</td>
+                <td>${blk.usernum!}</td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>

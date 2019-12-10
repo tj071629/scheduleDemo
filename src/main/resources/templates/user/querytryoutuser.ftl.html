@@ -1,0 +1,61 @@
+<div class="bjui-pageContent">
+	<form id="pagerForm" data-toggle="ajaxsearch" action="${ctx}user/organedit.html" method="post">
+        <input type="hidden" name="userid" value="${user["id"]?c}">
+    </form>
+	<form action="#" method="get" id="j_addonlineindex_form" data-toggle="validate" data-alertmsg="false"> 
+        <input type="hidden" name="loginid" value="${user["loginid"]!}">
+		<p><label  class="control-label x85">试用账号信息:</label></p>
+		<p><label  class="control-label x85">账号ID:</label>
+			<label  class=" x85">${user["id"]?c}</label>
+		</p>
+		<p><label  class="control-label x85">账号昵称：</label>
+			<label  class=" x85">${user["nickname"]}</label>
+		</p>
+		<p><label  class="control-label x85">有效期至：</label>
+			<label  class=" x85">${(user["enddate"]?string("yyyy-MM-dd"))!}</label>
+		</p>
+		<p>
+			<label for="j_organ_phone" class="control-label x85">手机号：</label>
+			<label  class=" x85">${(user.phone)!}</label>
+		</p>
+		<p>
+			<label for="j_organ_email" class="control-label x85">邮箱：</label>
+			<label  class=" x85">${(email)!}</label>
+		</p>
+	</form> 
+			
+		<div align="center"><button id="saveindex" onclick="closeModal()"  class="btn-default">返  回</button>&nbsp;</div>
+</div>
+<script>
+function closeModal(){
+	$(this).dialog('close', 'istryqueryuser');	//关闭dialog
+}
+
+/* 隐藏编辑功能，后续需要再放开
+function savereguser(){
+	var reguserid=${user["id"]?c};
+	var phone=$("#cellphone").val();
+	var email=$("#email").val();
+	var loginid=$("#loginid").val();
+	var posturl='${ctx}user/savereguser';
+	var postdata={reguserid:reguserid,phone:phone,email:email,loginid:loginid};
+		$.ajax({
+			type : "POST",
+			url : posturl,
+			data : postdata,
+			contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+			dataType : "json",
+			success : function(rtndata) {
+				if (rtndata.success) {
+					$("body").alertmsg('info', '保存成功！',{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+					refreshData();
+				}else{
+					$("body").alertmsg('info', "保存失败,请联系管理员!",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'})
+				}
+			}
+		}) 
+} */
+function refreshData(){
+	$("#pagerForm").submit();
+};
+</script>

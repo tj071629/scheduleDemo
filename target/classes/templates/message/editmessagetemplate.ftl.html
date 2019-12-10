@@ -1,0 +1,137 @@
+<div class="bjui-pageContent">
+		<form class="cmxform" id="templatemodalForm" method="get" action="" autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+			
+				<tr>
+					<td><label for="j_organ_codevalid" class="control-label x120">模板名称：</label></td>
+					<td><input type="text"  name="templatename" id="templatename_emt"
+						value="${(template.templatename)!}" size="15"
+						<#if templateid?? && templateid != -1>
+						readonly="readonly"
+						</#if>
+						>&nbsp;<font color='red'>*</td>
+				</tr>
+				
+	            <tr>
+					<td><label for="" class="control-label x120">模板类型：</label></td>
+					<td><input
+						type="radio" name="templatetype" id="j_templatetype0"
+						data-toggle="icheck" value="true"
+						<#if template?? && template.type==0>
+						checked 
+						</#if>
+						data-label="消息" checked=checked>
+						<input type="radio"
+						<#if template?? && template.type==1>
+						checked
+						</#if>
+						name="templatetype" id="j_templatetype1"
+						data-toggle="icheck" value="false" data-label="通知">
+						<input type="radio"
+						<#if template?? && template.type==2>
+						checked
+						</#if>
+						name="templatetype" id="j_templatetype2"
+						data-toggle="icheck" value="false" data-label="邮件">
+						<input type="radio"
+						<#if template?? && template.type==3>
+						checked
+						</#if>
+						name="templatetype" id="j_templatetype3"
+						data-toggle="icheck" value="false" data-label="短信">
+						&nbsp;<font color='red'>*
+						</td>
+				</tr>
+                
+                <tr>
+					<td><label for="j_organ_codevalid" class="control-label x120">模板内容：</label></td>
+			            <td><textarea name="content" id="msg_kind_content" data-toggle="kindeditor">${(template.content)!}</textarea>&nbsp;<font color='red'>*</font></td>
+				</tr>
+                
+			</tbody>
+			
+		</table>
+		
+		<input type="hidden" name="templateid" id="templateid" value="${(templateid?c)!}">
+		
+		<br/><br/>
+		
+		<div align="center"><button type="button" id="savemessagetemplate" class="btn-default" data-icon="save">保存</button></div>
+
+</form>
+
+</div>
+
+<script>
+
+
+//校验表单
+$('#templatemodalForm').validator({
+	rules: {
+        //自定义一个规则，用来代替remote（注意：要把$.ajax()返回出来）
+        myRemote: function(element){
+            return $.ajax({
+                url: '${ctx}message/isexisttemplatename',
+                type: 'post',
+                data: 'templatename='+$("#templatename_emt").val()+'&templateid='+($("#templateid")?$("#templateid").val():null),
+                dataType: 'text',
+                success: function(d){
+                }
+            });
+        }
+    },
+    fields: {
+        'templatename': 'required;  myRemote;',
+        'templatetype': 'required;',
+        'content': 'required;'
+    },
+    valid: function(form){
+    	//触发提交后台操作
+    	savemessagetemplate();
+    }
+}).on("click", "#savemessagetemplate", function(e){
+    $(e.delegateTarget).trigger("validate");
+});
+
+
+ function savemessagetemplate(){
+	
+	var templateid='${(templateid?c)!}';
+	var templatename=$("#templatename_emt").val();
+	var content=$("#msg_kind_content").val();
+	
+	var templatetype;
+	if($("#j_templatetype0").is(":checked")){
+		templatetype=0;
+	}else if($("#j_templatetype1").is(":checked")){
+		templatetype=1;
+	}else if($("#j_templatetype2").is(":checked")){
+		templatetype=2;
+	}else{
+		templatetype=3;
+	}
+	
+	var url='${ctx}message/savemessagetemplate';
+	var params={templateid:templateid,templatetype:templatetype,templatename:templatename,content:content};
+	
+	var callback=function(rtndata){
+		var success=rtndata.success;
+		if(success){
+			altmsg("保存成功！","保存成功",function(){
+			});
+			if(templateid && templateid == -1){
+				$(this).dialog('close', 'addmessagetemplate');	//关闭dialog
+			}else{
+				$(this).dialog('close', 'editmessagetemplate');	//关闭dialog
+			}
+			
+			$("#pagerForm").submit();
+		}
+		
+	}
+	querydata(url,params,callback); 
+
+}
+
+</script>

@@ -1,0 +1,128 @@
+<style>
+.widget-header-small {
+	min-height: 31px;
+	padding-left: 10px;
+}
+
+.widget-header {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	position: relative;
+	min-height: 38px;
+	background: #f7f7f7;
+	background-image: -webkit-gradient(linear, left 0, left 100%, from(#fff),
+		to(#eee));
+	background-image: -webkit-linear-gradient(top, #fff, 0%, #eee, 100%);
+	background-image: -moz-linear-gradient(top, #fff 0, #eee 100%);
+	background-image: linear-gradient(to bottom, #fff 0, #eee 100%);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff',
+		endColorstr='#ffeeeeee', GradientType=0);
+	color: #669fc7;
+	border: 1px solid #CCC;
+	border-bottom: 1px solid #DDD;
+	padding-left: 12px
+}
+
+.col-xs-6,.col-sm-3,.col-sm-9{
+    position: relative;
+    min-height: 1px;
+    padding-right: 12px;
+    padding-left: 12px;
+}
+
+
+.btn-sm {
+    border-width: 1px;
+    font-size: 11px;
+    padding: 4px 9px;
+    line-height: 1.39;
+}
+
+.btn-grey, .btn-grey:focus {
+    background-color: #a0a0a0!important;
+    border-color: #a0a0a0;
+}
+
+.col-md-offset-3{margin-left:25%}
+
+</style>
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+				<span id="ui-id-26" class="ui-dialog-title">
+					<div class="widget-header widget-header-small">
+						<h4 class="smaller">
+							<i class="icon-ok" id="input-title"></i>
+						</h4>
+					</div>
+				</span>
+			</div>
+			<form id="func_fmt" role="form" class="form-horizontal">
+			<input type="hidden" name="id" id="funcEditId" value="${(func.id?c)!0}">
+			<input id="superFuncId" name="superId" type="hidden" value="${(superFunc.id?c)!}"/>
+			<div class="modal-body">
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-3">
+						<label class="col-sm-12 control-label no-padding-right">上级菜单</label>
+					</div>
+					<div class="col-xs-6 col-sm-9">
+						<input type="text" class="col-xs-12 col-sm-8"  value="${(superFunc.funcName)! }" readonly="readonly"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-3">
+						<label class="col-sm-12 control-label no-padding-right" for="funcName">功能名称</label>
+					</div>
+					<div class="col-xs-6 col-sm-9">
+						<input type="text" name="funcName" id="funcName" class="col-xs-12 col-sm-8" placeholder="请输入功能名称 " value="${(func.funcName)! }"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-3">
+						<label class="col-sm-12 control-label no-padding-right" for="funcCode">功能编码</label>
+					</div>
+					<div class="col-xs-6 col-sm-9">
+						<input type="text" name="funcCode" id="funcCode" class="col-xs-12 col-sm-8" placeholder="请输入功能编码 " value="${(func.funcCode)! }"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-3">
+						<label class="col-sm-12 control-label no-padding-right" for="cityId">功能URL</label>
+					</div>
+					<div class="col-xs-6 col-sm-9">
+						<input type="text" name="funcPath" id="funcPath" class="col-xs-12 col-sm-8" placeholder="请输入功能路径" value="${(func.funcPath)!}"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-3">
+						<label class="col-sm-12 control-label no-padding-right" for="cityId">功能顺序</label>
+					</div>
+					<div class="col-xs-6 col-sm-9">
+						<input type="text" name="funcOrder" id="funcOrder" class="col-xs-12 col-sm-8" placeholder="请输入功能顺序" value="${(func.funcOrder)!}"/>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="col-md-offset-3 col-md-9">
+					<button class="btn-sm btn-primary" type="button" id="savefunc">
+						保存
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn-sm btn-primary btn-grey" type="button" id="closefunc">
+						关闭
+					</button>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript">
+		/* $(".chosen-select").chosen();  */
+	
+		$(document).ready(function(){
+			Func.loadInputPage();
+		});
+	</script>

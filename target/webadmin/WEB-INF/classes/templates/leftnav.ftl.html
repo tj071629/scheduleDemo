@@ -1,0 +1,111 @@
+<button type="button" class="btn-default bjui-hnav-more-left" title="导航菜单左移"><i class="fa fa-angle-double-left"></i></button>
+            <div id="bjui-hnav-navbar-box">
+                <ul id="bjui-hnav-navbar">
+                    <li class="active"><a href="javascript:;" data-toggle="slidebar">网站管理</a>
+                        <div class="items hide" data-noinit="true">
+                            <ul data-tit="管理首页" class="menu-items" data-faicon="hand-o-up">
+                                <li><a data-options="{id:'form-input', faicon:'caret-square-o-down'}">个人信息</a></li>
+                            </ul>
+                        
+                            <ul data-tit="用户管理" class="menu-items" data-faicon="hand-o-up">
+                                <li><a data-options="{id:'form-button', faicon:'hand-o-up'}">机构管理</a><b><i class="fa fa-angle-down"></i></b>
+	                                <ul class="menu-items-children">
+	                                    <li><a href="${ctx}organ/organlist.html" data-options="{id:'organlist', faicon:'caret-square-o-down'}">机构列表</a></li>
+                                		<li><a href="${ctx}organcode/organcodelist.html" data-options="{id:'organcodelist', faicon:'caret-square-o-down'}">机构注册码列表</a></li>
+	                                </ul>
+                                </li>
+                                <li><a data-options="{id:'form-button', faicon:'hand-o-up'}">用户管理</a><b><i class="fa fa-angle-down"></i></b>
+	                                <ul class="menu-items-children">
+	                                    <li><a href="${ctx}user/reguserlist.html" data-options="{id:'form-regusers', faicon:'caret-square-o-down'}">注册信息管理</a></li>
+		                                <li><a href="${ctx}user/tradeuserlist.html" data-options="{id:'form-tradeusers', faicon:'caret-square-o-down'}">使用信息管理</a></li>
+		                                <li><a href="${ctx}user/istryoutlist.html" data-options="{id:'form-istryoutlist', faicon:'caret-square-o-down'}">试用账号列表</a></li>
+	                                </ul>
+                                </li>  
+                                
+                            </ul>
+                            <ul data-tit="指标管理"  class="menu-items" data-faicon="hand-o-up">
+                            	<li><a data-options="{id:'form-button', faicon:'hand-o-up'}">指标管理</a><b><i class="fa fa-angle-down"></i></b>
+	                                <ul class="menu-items-children">
+	                                    <li><a  href="${ctx}indic/list.html" data-options="{id:'form-approvallist', faicon:'caret-square-o-down'}">指标审核信息</a></li>
+		                                <li><a  href="${ctx}indic/freeindiclist.html" data-options="{id:'form-freelist', faicon:'caret-square-o-down'}">免费指标投票信息</a></li>
+		                                <li><a  href="${ctx}indic/payindiclist.html"  data-options="{id:'form-paylist', faicon:'caret-square-o-down'}">付费指标付费信息</a></li>
+		                                <li><a  href="${ctx}indic/devindiclist.html"  data-options="{id:'form-devlist', faicon:'caret-square-o-down'}">指标开发信息</a></li>
+		                                <li><a  href="${ctx}indic/accindiclist.html"  data-options="{id:'form-acclist', faicon:'caret-square-o-down'}">指标验收信息</a></li>
+	                                </ul>
+                                </li>  
+                                <li><a data-options="{id:'form-button', faicon:'hand-o-up'}">机构用户指标</a><b><i class="fa fa-angle-down"></i></b>
+                                	<ul class="menu-items-children">
+		                            	 <li><a  href="${ctx}organ/indexlist.html" data-options="{id:'form-orgindiclist', faicon:'caret-square-o-down'}">机构指标信息</a></li>
+		                            </ul>
+                                </li>
+                            </ul>
+                            
+                            <ul data-tit="运营管理"  class="menu-items" data-faicon="hand-o-up">
+                            	<li><a data-options="{id:'form-button', faicon:'hand-o-up'}">营销管理</a><b><i class="fa fa-angle-down"></i></b>
+	                                <ul class="menu-items-children">
+	                                    <li><a  href="${ctx}sale/sendmaillist.html" data-options="{id:'batchsendmail', faicon:'caret-square-o-down'}">批量发送邮件</a></li>
+	                                </ul>
+                                </li>
+                                <li><a data-options="{id:'form-button', faicon:'hand-o-up'}">数据统计管理</a><b><i class="fa fa-angle-down"></i></b>
+	                                <!-- <ul class="menu-items-children">
+	                                    <li><a  href="${ctx}sale/sendmaillist.html" data-options="{id:'batchsendmail', faicon:'caret-square-o-down'}">数据统计管理</a></li>
+	                                </ul> -->
+                                </li> 
+                                <li><a data-options="{id:'form-button', faicon:'hand-o-up'}">产品定价管理</a><b><i class="fa fa-angle-down"></i></b>
+                                	<ul class="menu-items-children">
+		                            	 <li><a data-options="{id:'form-button', faicon:'hand-o-up'}">编辑定价规则</a></li>
+                                 		 <li><a data-options="{id:'form-button', faicon:'hand-o-up'}">板块详情</a></li>
+		                            </ul>
+                                </li>
+                                <li><a data-options="{id:'form-button', faicon:'hand-o-up'}">消息管理</a><b><i class="fa fa-angle-down"></i></b>
+                                	<ul class="menu-items-children">
+		                            	 <li><a  href="${ctx}message/messagetemplatelist.html" data-options="{id:'messagetemplatelist', faicon:'caret-square-o-down'}">消息模板列表</a></li>
+		                            </ul>
+                                </li>
+                            </ul>
+                            
+                            <ul data-tit="财务管理"  class="menu-items" data-faicon="hand-o-up">
+                            	<li><a data-options="{id:'form-button', faicon:'hand-o-up'}">交易管理</a><b><i class="fa fa-angle-down"></i></b>
+	                                <ul class="menu-items-children">
+	                                    <li><a  data-options="{id:'form-select', faicon:'caret-square-o-down'}">查看订单</a></li>
+	                                </ul>
+                                </li>
+                                <li><a data-options="{id:'form-button', faicon:'hand-o-up'}">补发/分成管理</a><b><i class="fa fa-angle-down"></i></b>
+                                	<ul class="menu-items-children">
+		                            	 <li><a  data-options="{id:'form-select', faicon:'caret-square-o-down'}">查看</a></li>
+                                        <li><a  data-options="{id:'form-select', faicon:'caret-square-o-down'}">编辑</a></li>
+		                            </ul>
+                                </li>
+                            </ul>
+                            
+                            <ul data-tit="社区管理"  class="menu-items" data-faicon="hand-o-up">
+                            	<li><a href="${ctx}forum/list.html" data-options="{id:'formlist', faicon:'hand-o-up'}">帖子管理</a></li>
+                                <li><a href="${ctx}forum/cmtlist.html"  data-options="{id:'formcmtlist', faicon:'hand-o-up'}">评论管理</a></li>
+                                <li><a href="${ctx}forum/blklist.html"   data-options="{id:'formblklist', faicon:'hand-o-up'}">板块管理</a></li>
+                            </ul>
+                            
+                            <ul data-tit="其他"  class="menu-items" data-faicon="hand-o-up">
+                                <li><a  href="${ctx}feeback/list.html" data-options="{id:'feeback-approvallist', faicon:'caret-square-o-down'}">用户反馈信息</a></li>
+                                <li><a  href="${ctx}online/list.html" data-options="{id:'online-approvallist', faicon:'caret-square-o-down'}">新上线指标</a></li>
+                                <li><a  href="${ctx}rests/list.html" data-options="{id:'rests-approvallist', faicon:'caret-square-o-down'}">辅助功能</a></li>
+                                <li><a  href="${ctx}indicstore/list.html" data-options="{id:'indicstore-approvallist', faicon:'caret-square-o-down'}">指标入solr</a></li>
+                            </ul>
+                            
+                            <ul data-tit="系统设置" class="menu-items" data-faicon="hand-o-up">
+	                        	<li><a  href="${ctx}admin/userlist.html" data-options="{id:'userlist', faicon:'caret-square-o-down'}">人员管理</a></li>
+	                            <li><a href="${ctx}admin/rolelist.html"  data-options="{id:'rolelist', faicon:'caret-square-o-down'}">角色管理</a></li>
+	                            <li><a href="${ctx}admin/prilist.html"  data-options="{id:'prilist', faicon:'caret-square-o-down'}">权限管理</a></li>
+	                        </ul>
+                        </div>
+                    </li>
+                    
+                    <li class="dropdown"><a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i> 系统设置 <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.1kmt.com/web/aboutUs/index.html" target="_blank" >关于我们</a></li>
+                            <li class="divider"></li>
+                            <li><a href="https://www.1kmt.com/" target="_blank" >友情链接</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <button type="button" class="btn-default bjui-hnav-more-right" title="导航菜单右移"><i class="fa fa-angle-double-right"></i></button>

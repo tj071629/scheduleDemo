@@ -1,0 +1,48 @@
+<div class="bjui-pageContent">
+		<form class="cmxform" id="templatemodalForm" method="get" action="" autocomplete="off">
+		<table class="table table-condensed table-hover" width="100%">
+			<tbody>
+			
+                <tr>
+					<td><label for="j_organ_codevalid" class="control-label x120">消息内容：</label></td>
+			            <td><textarea name="content" id="msg_kind_trade" data-toggle="kindeditor" data-rule="required;">${(template.content)!}</textarea>&nbsp;<font color='red'>*</font></td>
+				</tr>
+                
+			</tbody>
+			
+		</table>
+		
+		<br/><br/>
+		
+		<div align="center"><button type="button"  onclick="sendmessagecustom();" class="btn-default" data-icon="save">发  送</button></div>
+
+</form>
+
+</div>
+
+<script>
+
+
+ function sendmessagecustom(){
+	
+	var content=$("#msg_kind_trade").val();
+	alert(content);
+	$.ajax({
+		type : "POST",
+		url : "${ctx}user/sendmsg",
+		data : {userid:'${(userid?c)!}',msg:content},
+		contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+		dataType : "json",
+		success : function(rtndata) {
+			if (rtndata.success == 1) {
+				$("body").alertmsg('info', "发送成功",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'});
+				$(this).dialog('close', 'tradeuser_custom');	//关闭dialog
+			}else{
+				$("body").alertmsg('info', "发送失败,请联系管理员",{displayMode:'slide', displayPosition:'middlecenter', okName:'Yes', cancelName:'no', title:'提示'});
+			}
+		}
+	}) 
+
+}
+
+</script>
